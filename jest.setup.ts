@@ -54,7 +54,8 @@ if (typeof globalThis.cancelAnimationFrame !== 'function') {
 }
 
 if (!HTMLCanvasElement.prototype.getContext) {
-  HTMLCanvasElement.prototype.getContext = () => {
+  HTMLCanvasElement.prototype.getContext = ((contextId: string) => {
+    if (contextId !== '2d') return null;
     const imageData = {
       data: new Uint8ClampedArray(64),
     };
@@ -65,8 +66,9 @@ if (!HTMLCanvasElement.prototype.getContext) {
       putImageData: () => {},
       drawImage: () => {},
       createImageData: () => imageData,
-    } as CanvasRenderingContext2D;
-  };
+      transferFromImageBitmap: () => {},
+    } as unknown as CanvasRenderingContext2D;
+  }) as typeof HTMLCanvasElement.prototype.getContext;
 }
 
 jest.mock('next/image', () => ({

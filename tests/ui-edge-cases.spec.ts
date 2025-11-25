@@ -80,7 +80,8 @@ async function primeAdminFetch(
     }));
     let messageCounter = store.flatMap((c) => c.messages).length;
     const mockState = { conversations: store, messagePosts: 0, appendFailures: 0 };
-    (window as any).__adminMock = mockState;
+    const adminWindow = window as typeof window & { __adminMock?: typeof mockState };
+    adminWindow.__adminMock = mockState;
     const originalFetch = window.fetch.bind(window);
     window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
       const url = typeof input === 'string' ? input : input?.toString?.() ?? '';
@@ -357,9 +358,12 @@ test.describe('Admin dashboard edge cases', () => {
     await appendBox.fill('This will fail to append.');
     await page.getByRole('button', { name: /^add message$/i }).click();
 
-    await page.waitForFunction(
-      () => (window as any).__adminMock?.appendFailures > 0
-    );
+    await page.waitForFunction(() => {
+      const adminWindow = window as typeof window & {
+        __adminMock?: { appendFailures: number };
+      };
+      return (adminWindow.__adminMock?.appendFailures ?? 0) > 0;
+    });
     await expect(page.locator('.admin-error')).toContainText(/append failed/i);
     await expect(appendBox).toHaveValue('This will fail to append.');
     const failedRow = page.locator('.admin-msg-row').filter({

@@ -71,7 +71,7 @@ async function sendViaResend(options: {
     to: options.to,
     subject: options.subject,
     text: options.text,
-    reply_to: options.replyTo || undefined,
+    replyTo: options.replyTo || undefined,
   });
 
   if (error) {

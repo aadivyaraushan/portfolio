@@ -19,6 +19,24 @@ type Conversation = {
   messages: Message[];
 };
 
+type ApiMessage = Omit<Message, 'time'> & { time: string | Date };
+type ApiConversation = Omit<Conversation, 'messages'> & { messages?: ApiMessage[] };
+
+const toMessage = (msg: ApiMessage): Message => ({
+  id: msg.id,
+  text: msg.text,
+  time: msg.time instanceof Date ? msg.time : new Date(msg.time),
+});
+
+const toConversation = (conv: ApiConversation): Conversation => ({
+  id: conv.id,
+  title: conv.title,
+  preview: conv.preview,
+  pinned: conv.pinned ?? false,
+  icon: conv.icon ?? undefined,
+  messages: Array.isArray(conv.messages) ? conv.messages.map(toMessage) : [],
+});
+
 function AdminDashboard() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -38,7 +56,9 @@ function AdminDashboard() {
     name ? name.trim().toLowerCase().replace(/\s+/g, '-') : '';
 
   useEffect(() => {
-    const parseJson = async (res: Response) => {
+    const parseJson = async (
+      res: Response,
+    ): Promise<{ conversations?: ApiConversation[]; error?: string } | null> => {
       try {
         return await res.clone().json();
       } catch {
@@ -61,23 +81,20 @@ function AdminDashboard() {
       if (!res.ok || !json?.conversations) {
         throw new Error(json?.error || `failed to load conversations (status ${res.status})`);
       }
-      return (json.conversations ?? []) as Conversation[];
+      return (json.conversations ?? []).map(toConversation);
     };
 
     const load = async () => {
       try {
-        const jsonConvs = await loadOnce().catch(() => loadOnce());
-        const convs: Conversation[] = jsonConvs.map((c: any) => ({
-          ...c,
-          messages: (c.messages ?? []).map((m: any) => ({ ...m, time: new Date(m.time) })),
-        }));
-        setConversations(convs);
-        setSelectedConversation((prev) => prev ?? convs[0]?.id ?? null);
+        const convs = await loadOnce().catch(() => loadOnce());
+        setConversations(convs ?? []);
+        setSelectedConversation((prev) => prev ?? convs?.[0]?.id ?? null);
         setError(null);
-      } catch (err: any) {
+      } catch (err: unknown) {
         setConversations([]);
         setSelectedConversation(null);
-        setError(err?.message ?? 'failed to load conversations from supabase');
+        const message = err instanceof Error ? err.message : null;
+        setError(message ?? 'failed to load conversations from supabase');
       }
     };
 
@@ -167,7 +184,7 @@ function AdminDashboard() {
       }
       const newConversation: Conversation = {
         ...json.conversation,
-        messages: (json.conversation.messages ?? []).map((m: any) => ({ ...m, time: new Date(m.time) })),
+        messages: (json.conversation.messages ?? []).map(toMessage),
       };
       setConversations((prev) => [newConversation, ...prev]);
       setSelectedConversation(newConversation.id);

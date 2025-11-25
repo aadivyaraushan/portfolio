@@ -1,5 +1,3 @@
-const noop = () => {};
-
 class Scene {
   add = jest.fn();
 }
@@ -14,7 +12,9 @@ class PerspectiveCamera {
 }
 
 class WebGLRenderer {
-  constructor(_: any) {}
+  constructor(...args: unknown[]) {
+    void args;
+  }
   setPixelRatio = jest.fn();
   setSize = jest.fn();
   render = jest.fn();
@@ -41,35 +41,53 @@ class PlaneGeometry {
   dispose = jest.fn();
 }
 
+class Texture {
+  magFilter: unknown;
+  minFilter: unknown;
+  flipY = false;
+  wrapS: unknown;
+  wrapT: unknown;
+}
+
 class MeshBasicMaterial {
-  map: any = null;
+  map: Texture | null = null;
   needsUpdate = false;
-  constructor(_: any = {}) {}
+  constructor(params: unknown = {}) {
+    void params;
+  }
   dispose = jest.fn();
 }
 
 class Mesh {
   position = { set: jest.fn(), x: 0, y: 0 };
   rotation = { x: 0, y: 0 };
-  constructor(_: any, __: any) {}
+  constructor(...args: unknown[]) {
+    void args;
+  }
 }
 
 class AmbientLight {
-  constructor(_: any, __?: any) {}
+  constructor(...args: unknown[]) {
+    void args;
+  }
 }
 
 class DirectionalLight {
   position = { set: jest.fn() };
-  constructor(_: any, __?: any) {}
+  constructor(...args: unknown[]) {
+    void args;
+  }
 }
 
 class CanvasTexture {
-  magFilter: any;
-  minFilter: any;
-  wrapS: any;
-  wrapT: any;
+  magFilter: unknown;
+  minFilter: unknown;
+  wrapS: unknown;
+  wrapT: unknown;
   flipY = false;
-  constructor(_: HTMLCanvasElement) {}
+  constructor(canvas: HTMLCanvasElement) {
+    void canvas;
+  }
 }
 
 class TextureLoader {
@@ -78,14 +96,6 @@ class TextureLoader {
     if (cb) cb(texture);
     return texture;
   };
-}
-
-class Texture {
-  magFilter: any;
-  minFilter: any;
-  flipY = false;
-  wrapS: any;
-  wrapT: any;
 }
 
 const MathUtils = {
@@ -113,7 +123,7 @@ export {
   MathUtils,
 };
 
-export default {
+const threeMock = {
   Scene,
   PerspectiveCamera,
   WebGLRenderer,
@@ -131,3 +141,5 @@ export default {
   NearestFilter,
   ClampToEdgeWrapping,
 };
+
+export default threeMock;

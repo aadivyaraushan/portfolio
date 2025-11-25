@@ -337,11 +337,6 @@ a {
   font-size: 12px;
 }
 
-.thread-actions {
-  display: flex;
-  gap: 8px;
-}
-
 .messages-layout {
   flex: 1 1 auto;
   display: flex;

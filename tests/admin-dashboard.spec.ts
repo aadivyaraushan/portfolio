@@ -1,9 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
 
-const HOSTNAME = process.env.HOSTNAME ?? 'localhost';
-const PORT = process.env.PORT ?? '3001';
-const BASE_URL = `http://${HOSTNAME}:${PORT}`;
-
 type AdminConversation = {
   id: string;
   title: string;
@@ -49,14 +45,6 @@ function buildAdminFixtures(): AdminConversation[] {
   ];
 }
 
-function slugify(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 async function primeAdminFetch(
   page: Page,
   conversations: AdminConversation[],
@@ -75,7 +63,8 @@ async function primeAdminFetch(
     }));
     let messageCounter = store.flatMap((c) => c.messages).length;
     const mockState = { conversations: store, messagePosts: 0, appendFailures: 0 };
-    (window as any).__adminMock = mockState;
+    const adminWindow = window as typeof window & { __adminMock?: typeof mockState };
+    adminWindow.__adminMock = mockState;
     const originalFetch = window.fetch.bind(window);
     window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
       const url = typeof input === 'string' ? input : input?.toString?.() ?? '';
@@ -332,9 +321,12 @@ test.describe('Admin dashboard operations', () => {
     const appendBox = card.getByPlaceholder('type a new message to append...');
     await appendBox.fill('This is a new admin message.');
     await card.getByRole('button', { name: /^add message$/i }).click();
-    await page.waitForFunction(
-      () => (window as any).__adminMock?.messagePosts > 0
-    );
+    await page.waitForFunction(() => {
+      const adminWindow = window as typeof window & {
+        __adminMock?: { messagePosts: number };
+      };
+      return (adminWindow.__adminMock?.messagePosts ?? 0) > 0;
+    });
     const newMessageRow = page.locator('.admin-msg-row').first();
     await expect(newMessageRow.getByRole('textbox')).toHaveValue(
       'This is a new admin message.'

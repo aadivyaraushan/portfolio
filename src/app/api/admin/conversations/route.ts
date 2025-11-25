@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
-const revive = (row: any) => ({
+type MessageRow = {
+  id: string;
+  text: string;
+  created_at?: string | null;
+  time?: string | null;
+  thread_id?: string;
+};
+
+const revive = (row: MessageRow) => ({
   id: row.id,
   text: row.text,
   time: new Date(row.created_at ?? row.time ?? Date.now()),
@@ -30,7 +38,7 @@ export async function GET() {
     return NextResponse.json({ error: messageError.message }, { status: 500 });
   }
 
-  const grouped: Record<string, any[]> = {};
+  const grouped: Record<string, ReturnType<typeof revive>[]> = {};
   (messages ?? []).forEach((m) => {
     if (!grouped[m.thread_id]) grouped[m.thread_id] = [];
     grouped[m.thread_id].push(revive(m));
@@ -66,7 +74,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: threadError?.message ?? 'failed to create thread' }, { status: 500 });
   }
 
-  let seededMessages: any[] = [];
+  let seededMessages: ReturnType<typeof revive>[] = [];
   if (seed && typeof seed === 'string' && seed.trim().length) {
     const { data: message, error: seedError } = await supabaseAdmin
       .from('messages')

@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js';
+
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({ admin: true })),
 }));
@@ -28,7 +30,6 @@ describe('getSupabaseAdmin', () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-key';
     const { getSupabaseAdmin } = await import('../../src/lib/supabaseAdmin');
     const client = getSupabaseAdmin();
-    const { createClient } = require('@supabase/supabase-js');
 
     expect(createClient).toHaveBeenCalledWith(
       'https://example.supabase.co',

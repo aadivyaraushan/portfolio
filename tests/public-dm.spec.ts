@@ -53,7 +53,7 @@ async function stubConversations(page: Page) {
 }
 
 async function captureContactRequests(page: Page) {
-  const sent: any[] = [];
+  const sent: Array<Record<string, unknown>> = [];
   await page.route('**/api/contact', async (route) => {
     const body = await route.request().postDataJSON();
     sent.push(body);

@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     to,
     subject,
     text: textBody,
-    reply_to: senderEmail || undefined,
+    replyTo: senderEmail || undefined,
   });
 
   if (error) {

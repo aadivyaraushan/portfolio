@@ -34,17 +34,6 @@ const ChatHeader = ({ conversation }: ChatHeaderProps) => (
         <div className='handle'>{conversation.preview}</div>
       </div>
     </div>
-    <div className='thread-actions'>
-      <button className='icon-btn' aria-label='call'>
-        📞
-      </button>
-      <button className='icon-btn' aria-label='video call'>
-        🎥
-      </button>
-      <button className='icon-btn' aria-label='info'>
-        ℹ️
-      </button>
-    </div>
   </div>
 );
 

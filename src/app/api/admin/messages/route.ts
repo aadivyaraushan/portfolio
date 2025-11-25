@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
-const revive = (row: any) => ({
+type MessageRow = {
+  id: string;
+  text: string;
+  created_at?: string | null;
+  time?: string | null;
+};
+
+const revive = (row: MessageRow) => ({
   id: row.id,
   text: row.text,
   time: new Date(row.created_at ?? row.time ?? Date.now()),

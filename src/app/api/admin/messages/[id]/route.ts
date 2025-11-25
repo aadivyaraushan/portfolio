@@ -1,12 +1,13 @@
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 type Params = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function DELETE(_req: Request, { params }: Params) {
-  const { id } = params;
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: 'id is required' }, { status: 400 });
   }
@@ -20,8 +21,8 @@ export async function DELETE(_req: Request, { params }: Params) {
   return NextResponse.json({ success: true });
 }
 
-export async function PATCH(req: Request, { params }: Params) {
-  const { id } = params;
+export async function PATCH(req: NextRequest, { params }: Params) {
+  const { id } = await params;
   const body = await req.json();
   const { text } = body ?? {};
   if (!id || !text || !text.trim()) {

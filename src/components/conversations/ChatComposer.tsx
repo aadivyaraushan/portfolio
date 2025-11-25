@@ -47,7 +47,7 @@ const ChatComposer = ({
       }),
     })
       .then(async (res) => {
-        const json = await res.json().catch(() => ({}));
+        await res.json().catch(() => ({}));
         if (!res.ok) {
           if (res.status === 429) {
             const retrySeconds = Number(res.headers.get('Retry-After'));

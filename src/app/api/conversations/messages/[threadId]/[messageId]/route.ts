@@ -1,16 +1,15 @@
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { threadId: string; messageId: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ threadId: string; messageId: string }> }
 ) {
-  console.log(
-    ` [DELETE /api/conversations/messages/${params.threadId}/${params.messageId}] Deleting message...`
-  );
+  const { threadId, messageId } = await params;
+  console.log(` [DELETE /api/conversations/messages/${threadId}/${messageId}] Deleting message...`);
 
   try {
-    const { threadId, messageId } = params;
     console.log(
       ` [DELETE /api/conversations/messages] Deleting message ${messageId} from thread ${threadId}`
     );

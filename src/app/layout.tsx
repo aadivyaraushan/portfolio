@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { EmojiClientProvider } from "@/components/EmojiClientProvider";
 
 export const metadata: Metadata = {
-  title: "AadivyaGPT",
-  description: "Chat with Aadivya's AI assistant to learn about his projects, research, and experience",
+  title: "aadivya — dms to self",
+  description: "a personal site skinned as an instagram dm thread about what i am building and thinking about",
 };
 
 export default function RootLayout({
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <EmojiClientProvider>
+          {children}
+        </EmojiClientProvider>
       </body>
     </html>
   );

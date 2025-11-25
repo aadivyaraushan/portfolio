@@ -83,6 +83,7 @@ async function primeAdminFetch(
     const adminWindow = window as typeof window & { __adminMock?: typeof mockState };
     adminWindow.__adminMock = mockState;
     const originalFetch = window.fetch.bind(window);
+    localStorage.setItem('admin-basic-auth', 'Basic stub-auth');
     window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
       const url = typeof input === 'string' ? input : input?.toString?.() ?? '';
       const method = (init?.method ?? 'GET').toString().toUpperCase();
@@ -93,6 +94,14 @@ async function primeAdminFetch(
           return {};
         }
       };
+      if (url.includes('/api/admin/auth')) {
+        return Promise.resolve(
+          new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        );
+      }
       if (url.includes('/api/admin/conversations')) {
         if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {
           return Promise.resolve(
@@ -339,6 +348,16 @@ test.describe('Admin dashboard edge cases', () => {
         body: JSON.stringify({ error: 'supabase offline' }),
       })
     );
+    
+    // Mock auth check to pass
+    await page.route('**/api/admin/auth', (route) => 
+      route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) })
+    );
+
+    // Set auth token
+    await page.addInitScript(() => {
+        localStorage.setItem('admin-basic-auth', 'Basic stub-auth');
+    });
 
     await page.goto('/admin');
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireAdminAuth } from '@/lib/adminAuth';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 type MessageRow = {
@@ -15,6 +16,9 @@ const revive = (row: MessageRow) => ({
 });
 
 export async function POST(req: Request) {
+  const authError = requireAdminAuth(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const { threadId, text } = body ?? {};
   if (!threadId || !text) {

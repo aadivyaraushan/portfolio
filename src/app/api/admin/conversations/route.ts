@@ -1,4 +1,6 @@
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { requireAdminAuth } from '@/lib/adminAuth';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 type MessageRow = {
@@ -15,7 +17,10 @@ const revive = (row: MessageRow) => ({
   time: new Date(row.created_at ?? row.time ?? Date.now()),
 });
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authError = requireAdminAuth(req);
+  if (authError) return authError;
+
   const supabaseAdmin = getSupabaseAdmin();
   const { data: threads, error: threadError } = await supabaseAdmin
     .from('threads')
@@ -57,6 +62,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const authError = requireAdminAuth(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const { title, preview, pinned, seed, icon } = body ?? {};
   if (!title || !preview) {
@@ -100,6 +108,9 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const authError = requireAdminAuth(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const { id, preview, title, pinned, icon } = body ?? {};
   if (!id) {
@@ -142,6 +153,9 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const authError = requireAdminAuth(req);
+  if (authError) return authError;
+
   const body = await req.json().catch(() => ({}));
   const { id } = body ?? {};
   if (!id) {

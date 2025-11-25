@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { requireAdminAuth } from '@/lib/adminAuth';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 type Params = {
@@ -7,6 +8,9 @@ type Params = {
 };
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
+  const authError = requireAdminAuth(_req);
+  if (authError) return authError;
+
   const { id } = await params;
   if (!id) {
     return NextResponse.json({ error: 'id is required' }, { status: 400 });
@@ -22,6 +26,9 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
+  const authError = requireAdminAuth(req);
+  if (authError) return authError;
+
   const { id } = await params;
   const body = await req.json();
   const { text } = body ?? {};

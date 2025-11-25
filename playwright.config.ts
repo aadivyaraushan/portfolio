@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { defineConfig } from '@playwright/test';
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'password';
+const ADMIN_BASIC_USER = process.env.ADMIN_BASIC_USER ?? 'admin';
+const ADMIN_BASIC_PASS = process.env.ADMIN_BASIC_PASS ?? 'password';
 const NEXTAUTH_SECRET =
   process.env.NEXTAUTH_SECRET ?? 'test-secret-please-change';
 const NEXTAUTH_URL = process.env.NEXTAUTH_URL ?? 'http://localhost:3001';
@@ -23,8 +23,8 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       ...process.env,
-      ADMIN_USERNAME,
-      ADMIN_PASSWORD,
+      ADMIN_BASIC_USER,
+      ADMIN_BASIC_PASS,
       NEXTAUTH_SECRET,
       NEXTAUTH_URL,
       PORT,

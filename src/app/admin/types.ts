@@ -1,0 +1,17 @@
+export type Message = {
+  id: string;
+  text: string;
+  time: Date;
+};
+
+export type Conversation = {
+  id: string;
+  title: string;
+  preview: string;
+  pinned?: boolean;
+  icon?: string;
+  messages: Message[];
+};
+
+export type ApiMessage = Omit<Message, 'time'> & { time: string | Date };
+export type ApiConversation = Omit<Conversation, 'messages'> & { messages?: ApiMessage[] };

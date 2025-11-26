@@ -39,9 +39,6 @@ function ChatSidebar({
     >
       <div className='sidebar-header'>
         <span className='handle'>Aadivya (Founder, Engineer, Researcher)</span>
-        <button className='icon-btn' aria-label='new chat'>
-          ✏️
-        </button>
       </div>
 
       <div className='search'>

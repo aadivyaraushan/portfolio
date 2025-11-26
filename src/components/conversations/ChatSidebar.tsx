@@ -53,7 +53,7 @@ function ChatSidebar({
       }}
     >
       <div className='sidebar-header'>
-        <span className='handle'>Aadivya (Founder, Engineer, Researcher)</span>
+        <span className='handle'>aadivya</span>
       </div>
 
       <div className='search'>

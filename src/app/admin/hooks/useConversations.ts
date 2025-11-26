@@ -15,6 +15,7 @@ const toConversation = (conv: ApiConversation): Conversation => ({
   preview: conv.preview,
   pinned: conv.pinned ?? false,
   icon: conv.icon ?? undefined,
+  index: conv.index ?? 0,
   messages: Array.isArray(conv.messages) ? conv.messages.map(toMessage) : [],
 });
 
@@ -34,7 +35,9 @@ export function useConversations({
   onError,
 }: UseConversationsOptions) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<
+    string | null
+  >(null);
 
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [newTitle, setNewTitle] = useState('');
@@ -48,14 +51,18 @@ export function useConversations({
   const [pinnedEdits, setPinnedEdits] = useState<Record<string, boolean>>({});
   const [messageEdits, setMessageEdits] = useState<Record<string, string>>({});
   const [iconEdits, setIconEdits] = useState<Record<string, string>>({});
+  const [indexEdits, setIndexEdits] = useState<Record<string, number>>({});
 
   const parseJson = async (
-    res: Response,
+    res: Response
   ): Promise<{ conversations?: ApiConversation[]; error?: string } | null> => {
     try {
       return await res.clone().json();
     } catch {
-      const raw = await res.clone().text().catch(() => '');
+      const raw = await res
+        .clone()
+        .text()
+        .catch(() => '');
       if (!raw) return null;
       try {
         return JSON.parse(raw);
@@ -70,11 +77,16 @@ export function useConversations({
       try {
         const res = await fetch(
           '/api/admin/conversations',
-          addAuth({ cache: 'no-store', headers: { Accept: 'application/json' } }),
+          addAuth({
+            cache: 'no-store',
+            headers: { Accept: 'application/json' },
+          })
         );
         const json = await parseJson(res);
         if (!res.ok || !json?.conversations) {
-          const error = new Error(json?.error || `failed to load conversations (status ${res.status})`);
+          const error = new Error(
+            json?.error || `failed to load conversations (status ${res.status})`
+          );
           (error as Error & { status?: number }).status = res.status;
           throw error;
         }
@@ -87,7 +99,10 @@ export function useConversations({
         setSelectedConversation(null);
         const message = err instanceof Error ? err.message : null;
         const status = (err as Error & { status?: number })?.status;
-        if (status === 401 || (message ?? '').toLowerCase().includes('unauthorized')) {
+        if (
+          status === 401 ||
+          (message ?? '').toLowerCase().includes('unauthorized')
+        ) {
           onError?.('authentication required: username or password incorrect');
           onAuthInvalid?.();
           return;
@@ -102,7 +117,9 @@ export function useConversations({
   }, [authHeader, authState, addAuth, onAuthInvalid, onError]);
 
   const handleUnauthorized = (message?: string | null) => {
-    onError?.(message ?? 'authentication required: username or password incorrect');
+    onError?.(
+      message ?? 'authentication required: username or password incorrect'
+    );
     onAuthInvalid?.();
   };
 
@@ -123,12 +140,16 @@ export function useConversations({
         onError?.(json.error ?? 'failed to append message via supabase');
         return;
       }
-      const created: Message = { ...json.message, time: new Date(json.message.time) };
+      const created: Message = {
+        ...json.message,
+        time: new Date(json.message.time),
+      };
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === conversationId
             ? { ...conv, messages: [...conv.messages, created] }
-            : conv),
+            : conv
+        )
       );
       setDrafts((prev) => ({ ...prev, [conversationId]: '' }));
       onError?.(null);
@@ -136,7 +157,10 @@ export function useConversations({
   };
 
   const handleDeleteMessage = (conversationId: string, messageId: string) => {
-    fetch(`/api/admin/messages/${messageId}`, addAuth({ method: 'DELETE' })).then(async (res) => {
+    fetch(
+      `/api/admin/messages/${messageId}`,
+      addAuth({ method: 'DELETE' })
+    ).then(async (res) => {
       if (res.status === 401) {
         const json = await res.json().catch(() => ({}));
         handleUnauthorized((json as { error?: string }).error);
@@ -150,8 +174,12 @@ export function useConversations({
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === conversationId
-            ? { ...conv, messages: conv.messages.filter((m) => m.id !== messageId) }
-            : conv),
+            ? {
+                ...conv,
+                messages: conv.messages.filter((m) => m.id !== messageId),
+              }
+            : conv
+        )
       );
       onError?.(null);
     });
@@ -217,13 +245,31 @@ export function useConversations({
   };
 
   const handleMetaSave = (conversation: Conversation) => {
-    const nextPreview = (previewEdits[conversation.id] ?? conversation.preview).trim();
-    const nextTitle = (titleEdits[conversation.id] ?? conversation.title).trim();
+    const nextPreview = (
+      previewEdits[conversation.id] ?? conversation.preview
+    ).trim();
+    const nextTitle = (
+      titleEdits[conversation.id] ?? conversation.title
+    ).trim();
     const nextPinned = pinnedEdits.hasOwnProperty(conversation.id)
       ? pinnedEdits[conversation.id]
-      : conversation.pinned ?? false;
-    const nextIcon = (iconEdits[conversation.id] ?? conversation.icon ?? '').trim();
-    if (!nextPreview && !nextTitle && !iconEdits.hasOwnProperty(conversation.id) && !pinnedEdits.hasOwnProperty(conversation.id)) {
+      : (conversation.pinned ?? false);
+    const nextIcon = (
+      iconEdits[conversation.id] ??
+      conversation.icon ??
+      ''
+    ).trim();
+    const nextIndex = indexEdits.hasOwnProperty(conversation.id)
+      ? indexEdits[conversation.id]
+      : (conversation.index ?? 0);
+
+    if (
+      !nextPreview &&
+      !nextTitle &&
+      !iconEdits.hasOwnProperty(conversation.id) &&
+      !pinnedEdits.hasOwnProperty(conversation.id) &&
+      !indexEdits.hasOwnProperty(conversation.id)
+    ) {
       onError?.('title or preview must be provided');
       return;
     }
@@ -231,7 +277,14 @@ export function useConversations({
     fetch('/api/admin/conversations', {
       method: 'PATCH',
       ...addAuth({ headers: { 'Content-Type': 'application/json' } }),
-      body: JSON.stringify({ id: conversation.id, preview: nextPreview, title: nextTitle, pinned: nextPinned, icon: nextIcon || null }),
+      body: JSON.stringify({
+        id: conversation.id,
+        preview: nextPreview,
+        title: nextTitle,
+        pinned: nextPinned,
+        icon: nextIcon || null,
+        index: nextIndex,
+      }),
     }).then(async (res) => {
       const json = await res.json();
       if (res.status === 401) {
@@ -251,14 +304,31 @@ export function useConversations({
                 title: json.conversation.title,
                 pinned: json.conversation.pinned,
                 icon: json.conversation.icon,
+                index: json.conversation.index,
               }
-            : conv,
-        ),
+            : conv
+        )
       );
-      setPreviewEdits((prev) => ({ ...prev, [conversation.id]: json.conversation.preview }));
-      setTitleEdits((prev) => ({ ...prev, [conversation.id]: json.conversation.title }));
-      setPinnedEdits((prev) => ({ ...prev, [conversation.id]: json.conversation.pinned }));
-      setIconEdits((prev) => ({ ...prev, [conversation.id]: json.conversation.icon ?? '' }));
+      setPreviewEdits((prev) => ({
+        ...prev,
+        [conversation.id]: json.conversation.preview,
+      }));
+      setTitleEdits((prev) => ({
+        ...prev,
+        [conversation.id]: json.conversation.title,
+      }));
+      setPinnedEdits((prev) => ({
+        ...prev,
+        [conversation.id]: json.conversation.pinned,
+      }));
+      setIconEdits((prev) => ({
+        ...prev,
+        [conversation.id]: json.conversation.icon ?? '',
+      }));
+      setIndexEdits((prev) => ({
+        ...prev,
+        [conversation.id]: json.conversation.index ?? 0,
+      }));
       onError?.(null);
     });
   };
@@ -290,11 +360,11 @@ export function useConversations({
             ? {
                 ...conv,
                 messages: conv.messages.map((m) =>
-                  m.id === messageId ? { ...m, text: json.message.text } : m,
+                  m.id === messageId ? { ...m, text: json.message.text } : m
                 ),
               }
-            : conv,
-        ),
+            : conv
+        )
       );
       setMessageEdits((prev) => ({ ...prev, [messageId]: json.message.text }));
       onError?.(null);
@@ -318,7 +388,9 @@ export function useConversations({
         return;
       }
       setConversations((prev) => prev.filter((c) => c.id !== conversationId));
-      setSelectedConversation((prev) => (prev === conversationId ? null : prev));
+      setSelectedConversation((prev) =>
+        prev === conversationId ? null : prev
+      );
       onError?.(null);
     });
   };
@@ -349,6 +421,8 @@ export function useConversations({
     setMessageEdits,
     iconEdits,
     setIconEdits,
+    indexEdits,
+    setIndexEdits,
     handleSend,
     handleDeleteMessage,
     handleCreate,

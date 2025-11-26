@@ -10,8 +10,11 @@ export type Conversation = {
   preview: string;
   pinned?: boolean;
   icon?: string;
+  index?: number;
   messages: Message[];
 };
 
 export type ApiMessage = Omit<Message, 'time'> & { time: string | Date };
-export type ApiConversation = Omit<Conversation, 'messages'> & { messages?: ApiMessage[] };
+export type ApiConversation = Omit<Conversation, 'messages'> & {
+  messages?: ApiMessage[];
+};

@@ -55,6 +55,8 @@ function AdminDashboard() {
     setMessageEdits,
     iconEdits,
     setIconEdits,
+    indexEdits,
+    setIndexEdits,
     handleSend,
     handleDeleteMessage,
     handleCreate,
@@ -71,7 +73,7 @@ function AdminDashboard() {
 
   const selected = useMemo<Conversation | null>(
     () => conversations.find((c) => c.id === selectedConversation) ?? null,
-    [conversations, selectedConversation],
+    [conversations, selectedConversation]
   );
 
   const authFallback = (
@@ -87,17 +89,27 @@ function AdminDashboard() {
   );
 
   const getPinnedValue = (conv: Conversation) =>
-    pinnedEdits.hasOwnProperty(conv.id) ? pinnedEdits[conv.id] : conv.pinned ?? false;
-  const getTitleValue = (conv: Conversation) => titleEdits[conv.id] ?? conv.title;
-  const getPreviewValue = (conv: Conversation) => previewEdits[conv.id] ?? conv.preview;
-  const getIconValue = (conv: Conversation) => iconEdits[conv.id] ?? conv.icon ?? '';
+    pinnedEdits.hasOwnProperty(conv.id)
+      ? pinnedEdits[conv.id]
+      : (conv.pinned ?? false);
+  const getTitleValue = (conv: Conversation) =>
+    titleEdits[conv.id] ?? conv.title;
+  const getPreviewValue = (conv: Conversation) =>
+    previewEdits[conv.id] ?? conv.preview;
+  const getIconValue = (conv: Conversation) =>
+    iconEdits[conv.id] ?? conv.icon ?? '';
+  const getIndexValue = (conv: Conversation) =>
+    indexEdits.hasOwnProperty(conv.id)
+      ? indexEdits[conv.id]
+      : (conv.index ?? 0);
 
   const metaSaveDisabled = (conv: Conversation) =>
     !(
       getPreviewValue(conv).trim() ||
       getTitleValue(conv).trim() ||
       pinnedEdits.hasOwnProperty(conv.id) ||
-      iconEdits.hasOwnProperty(conv.id)
+      iconEdits.hasOwnProperty(conv.id) ||
+      indexEdits.hasOwnProperty(conv.id)
     );
 
   return (
@@ -117,7 +129,7 @@ function AdminDashboard() {
           onCreate={handleCreate}
         />
 
-        <div className="admin-grid">
+        <div className='admin-grid'>
           <ConversationListPanel>
             <ConversationList
               conversations={conversations}
@@ -134,20 +146,43 @@ function AdminDashboard() {
               previewValue={getPreviewValue(selected)}
               iconValue={getIconValue(selected)}
               pinnedValue={getPinnedValue(selected)}
+              indexValue={getIndexValue(selected)}
               draftValue={drafts[selected.id] ?? ''}
               messageEdits={messageEdits}
               saveDisabled={metaSaveDisabled(selected)}
-              onTitleChange={(val) => setTitleEdits((prev) => ({ ...prev, [selected.id]: val }))}
-              onPreviewChange={(val) => setPreviewEdits((prev) => ({ ...prev, [selected.id]: val }))}
-              onIconChange={(val) => setIconEdits((prev) => ({ ...prev, [selected.id]: val }))}
-              onPinnedChange={(val) => setPinnedEdits((prev) => ({ ...prev, [selected.id]: val }))}
+              onTitleChange={(val) =>
+                setTitleEdits((prev) => ({ ...prev, [selected.id]: val }))
+              }
+              onPreviewChange={(val) =>
+                setPreviewEdits((prev) => ({ ...prev, [selected.id]: val }))
+              }
+              onIconChange={(val) =>
+                setIconEdits((prev) => ({ ...prev, [selected.id]: val }))
+              }
+              onPinnedChange={(val) =>
+                setPinnedEdits((prev) => ({ ...prev, [selected.id]: val }))
+              }
+              onIndexChange={(val) =>
+                setIndexEdits((prev) => ({
+                  ...prev,
+                  [selected.id]: Number.isNaN(Number(val)) ? 0 : Number(val),
+                }))
+              }
               onSaveMeta={() => handleMetaSave(selected)}
-              onDraftChange={(val) => setDrafts((prev) => ({ ...prev, [selected.id]: val }))}
+              onDraftChange={(val) =>
+                setDrafts((prev) => ({ ...prev, [selected.id]: val }))
+              }
               onSend={() => handleSend(selected.id)}
               onDeleteConversation={() => handleDeleteConversation(selected.id)}
-              onMessageChange={(messageId, val) => setMessageEdits((prev) => ({ ...prev, [messageId]: val }))}
-              onMessageSave={(messageId) => handleMessageSave(selected.id, messageId)}
-              onMessageDelete={(messageId) => handleDeleteMessage(selected.id, messageId)}
+              onMessageChange={(messageId, val) =>
+                setMessageEdits((prev) => ({ ...prev, [messageId]: val }))
+              }
+              onMessageSave={(messageId) =>
+                handleMessageSave(selected.id, messageId)
+              }
+              onMessageDelete={(messageId) =>
+                handleDeleteMessage(selected.id, messageId)
+              }
             />
           ) : null}
         </div>

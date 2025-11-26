@@ -62,8 +62,7 @@ export async function GET() {
     const { data: threads, error: threadError } = await supabase
       .from('threads')
       .select('*')
-      .order('pinned', { ascending: false })
-      .order('created_at', { ascending: false });
+      .order('index', { ascending: true });
 
     if (threadError) {
       console.error(

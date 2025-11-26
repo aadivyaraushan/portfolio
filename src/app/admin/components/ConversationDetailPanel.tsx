@@ -10,6 +10,7 @@ type ConversationDetailPanelProps = {
   previewValue: string;
   iconValue: string;
   pinnedValue: boolean;
+  indexValue: number;
   draftValue: string;
   messageEdits: Record<string, string>;
   saveDisabled: boolean;
@@ -17,6 +18,7 @@ type ConversationDetailPanelProps = {
   onPreviewChange: (value: string) => void;
   onIconChange: (value: string) => void;
   onPinnedChange: (value: boolean) => void;
+  onIndexChange: (value: number) => void;
   onSaveMeta: () => void;
   onDraftChange: (value: string) => void;
   onSend: () => void;
@@ -32,6 +34,7 @@ function ConversationDetailPanel({
   previewValue,
   iconValue,
   pinnedValue,
+  indexValue,
   draftValue,
   messageEdits,
   saveDisabled,
@@ -39,6 +42,7 @@ function ConversationDetailPanel({
   onPreviewChange,
   onIconChange,
   onPinnedChange,
+  onIndexChange,
   onSaveMeta,
   onDraftChange,
   onSend,
@@ -48,7 +52,7 @@ function ConversationDetailPanel({
   onMessageDelete,
 }: ConversationDetailPanelProps) {
   return (
-    <div className="admin-card" style={{ gridColumn: 'span 2' }}>
+    <div className='admin-card' style={{ gridColumn: 'span 2' }}>
       <ConversationHeader
         conversation={conversation}
         pinned={pinnedValue}
@@ -60,9 +64,11 @@ function ConversationDetailPanel({
         titleValue={titleValue}
         previewValue={previewValue}
         iconValue={iconValue}
+        indexValue={indexValue}
         onTitleChange={onTitleChange}
         onPreviewChange={onPreviewChange}
         onIconChange={onIconChange}
+        onIndexChange={onIndexChange}
         onSave={onSaveMeta}
         saveDisabled={saveDisabled}
       />

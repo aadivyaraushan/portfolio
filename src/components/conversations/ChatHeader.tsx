@@ -14,9 +14,8 @@ const ChatHeader = ({ conversation, onOpenSidebar }: ChatHeaderProps) => (
     {onOpenSidebar ? (
       <button
         type='button'
-        className='icon-btn'
+        className='icon-btn icon-btn--mobile-only'
         aria-label='open conversations list'
-        style={{ marginRight: 8, display: 'inline-flex' }}
         onClick={onOpenSidebar}
       >
         ☰

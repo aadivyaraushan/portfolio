@@ -17,6 +17,8 @@
   --anim-med: 260ms;
 }
 
+
+
 @keyframes micro-pop {
   0% {
     opacity: 0;
@@ -165,6 +167,17 @@ a {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
+}
+
+/* Mobile-only icon button helper: visible by default, hidden on wider viewports */
+.icon-btn--mobile-only {
+  display: flex; /* Ensure it's visible on mobile, overriding any potential hidden state if needed, though grid from .icon-btn usually suffices. Using flex to match original intent or grid is fine. Let's stick to grid from .icon-btn or just rely on inheritance. */
+}
+
+@media (min-width: 768px) {
+  .icon-btn--mobile-only {
+    display: none;
+  }
 }
 
 .search {
@@ -331,7 +344,8 @@ a {
   height: 64px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
   padding: 0 20px;
   border-bottom: 1px solid var(--border);
 }

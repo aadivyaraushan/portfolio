@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Emoji } from 'react-apple-emojis';
 import { Conversation, formatAgo } from '@/lib/conversationStore';
 import {
@@ -24,10 +24,25 @@ function ChatSidebar({
   loading,
   error,
 }: ChatSidebarProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const sortedConversations = useMemo(
     () => sortConversations(conversations),
     [conversations]
   );
+
+  const filteredConversations = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return sortedConversations;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return sortedConversations.filter((conversation) => {
+      const titleMatch = conversation.title.toLowerCase().includes(query);
+      const previewMatch = conversation.preview?.toLowerCase().includes(query);
+      return titleMatch || previewMatch;
+    });
+  }, [sortedConversations, searchQuery]);
 
   return (
     <aside
@@ -42,13 +57,18 @@ function ChatSidebar({
       </div>
 
       <div className='search'>
-        <input className='search-input' placeholder='search' />
+        <input 
+          className='search-input' 
+          placeholder='search' 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
       <div className='section-label'>messages</div>
 
       <div className='conversation-list'>
-        {sortedConversations.map((conversation) => (
+        {filteredConversations.map((conversation) => (
           <button
             type='button'
             key={conversation.id}
@@ -89,9 +109,11 @@ function ChatSidebar({
             </span>
           </button>
         ))}
-        {!sortedConversations.length && !loading ? (
+        {!filteredConversations.length && !loading ? (
           <div style={{ padding: '12px 18px', color: '#888' }}>
-            {error ?? 'no conversations found'}
+            {searchQuery.trim() 
+              ? `no conversations matching "${searchQuery}"`
+              : error ?? 'no conversations found'}
           </div>
         ) : null}
       </div>

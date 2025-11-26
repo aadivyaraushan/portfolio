@@ -10,9 +10,14 @@ import { annotateMessages } from '@/lib/conversationUi';
 type ChatThreadProps = {
   conversation: Conversation | null;
   loading: boolean;
+  onOpenSidebar?: () => void;
 };
 
-const ChatThread = ({ conversation, loading }: ChatThreadProps) => {
+const ChatThread = ({
+  conversation,
+  loading,
+  onOpenSidebar,
+}: ChatThreadProps) => {
   const annotatedMessages = useMemo(
     () => annotateMessages(conversation),
     [conversation]
@@ -22,7 +27,10 @@ const ChatThread = ({ conversation, loading }: ChatThreadProps) => {
     <section className='thread'>
       {conversation ? (
         <>
-          <ChatHeader conversation={conversation} />
+          <ChatHeader
+            conversation={conversation}
+            onOpenSidebar={onOpenSidebar}
+          />
           <ChatMessages messages={annotatedMessages} loading={loading} />
           <ChatComposer conversationTitle={conversation.title} />
         </>

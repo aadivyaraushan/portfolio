@@ -10,6 +10,7 @@ function PageContent() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -40,21 +41,42 @@ function PageContent() {
     return found ?? conversations[0];
   }, [activeId, conversations]);
 
+  const handleSelectConversation = (id: string) => {
+    setActiveId(id);
+    setIsSidebarOpen(false); // close overlay on mobile when a conversation is selected
+  };
+
   return (
     <div className='app-shell'>
       <div className='dm-frame'>
         <ChatSidebar
           conversations={conversations}
           activeId={activeId}
-          onSelect={setActiveId}
+          onSelect={handleSelectConversation}
           loading={loading}
           error={error}
         />
         <ChatThread
           conversation={activeConversation}
           loading={loading}
+          onOpenSidebar={() => setIsSidebarOpen(true)}
         />
       </div>
+
+      {isSidebarOpen && (
+        <div
+          className='sidebar--mobile-overlay'
+          onClick={() => setIsSidebarOpen(false)}
+        >
+          <ChatSidebar
+            conversations={conversations}
+            activeId={activeId}
+            onSelect={handleSelectConversation}
+            loading={loading}
+            error={error}
+          />
+        </div>
+      )}
     </div>
   );
 }

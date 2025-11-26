@@ -6,10 +6,23 @@ import { normalizeEmojiName, pastelColorFor } from '@/lib/conversationUi';
 
 type ChatHeaderProps = {
   conversation: Conversation;
+  onOpenSidebar?: () => void;
 };
 
-const ChatHeader = ({ conversation }: ChatHeaderProps) => (
+const ChatHeader = ({ conversation, onOpenSidebar }: ChatHeaderProps) => (
   <div className='thread-header'>
+    {onOpenSidebar ? (
+      <button
+        type='button'
+        className='icon-btn'
+        aria-label='open conversations list'
+        style={{ marginRight: 8, display: 'inline-flex' }}
+        onClick={onOpenSidebar}
+      >
+        ☰
+      </button>
+    ) : null}
+
     <div className='thread-title'>
       <div
         className='avatar'

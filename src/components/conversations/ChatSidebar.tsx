@@ -30,7 +30,13 @@ function ChatSidebar({
   );
 
   return (
-    <aside className='sidebar'>
+    <aside
+      className='sidebar'
+      onClick={(e) => {
+        // Prevent clicks inside the sidebar from closing the mobile overlay backdrop
+        e.stopPropagation();
+      }}
+    >
       <div className='sidebar-header'>
         <span className='handle'>aadivyaaaaaar</span>
         <button className='icon-btn' aria-label='new chat'>

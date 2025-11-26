@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 const MIN_LENGTH = 10;
 const MAX_LENGTH = 2000;
@@ -85,12 +84,7 @@ async function sendViaResend(options: {
 export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for') || 'unknown';
   const body = await req.json();
-  const {
-    text,
-    bot_field: botField,
-    threadTitle,
-    fromEmail,
-  } = body ?? {};
+  const { text, bot_field: botField, fromEmail } = body ?? {};
 
   if (botField) {
     return NextResponse.json({ success: true });
@@ -119,8 +113,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'message rejected' }, { status: 400 });
   }
 
-  const senderEmail =
-    typeof fromEmail === 'string' ? fromEmail.trim() : '';
+  const senderEmail = typeof fromEmail === 'string' ? fromEmail.trim() : '';
   if (!senderEmail) {
     return NextResponse.json(
       { error: 'fromEmail is required to send a message' },
@@ -142,73 +135,25 @@ export async function POST(req: Request) {
   }
 
   try {
-    const supabase = getSupabaseAdmin();
-    const normalizedTitle = (threadTitle ?? '').trim().toLowerCase();
+    // Build email contents only; do not write anything to Supabase.
+    const subject = '[portfolio] New message';
+    const textBody = [`From: ${senderEmail}`, '', trimmed].join('\n');
 
-    let threadId: string | null = null;
-    if (normalizedTitle) {
-      const { data: thread } = await supabase
-        .from('threads')
-        .select('id')
-        .eq('title', normalizedTitle)
-        .maybeSingle();
-      threadId = thread?.id ?? null;
-    }
-
-    if (!threadId) {
-      const { data: fallback } = await supabase
-        .from('threads')
-        .select('id')
-        .order('pinned', { ascending: false })
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      threadId = fallback?.id ?? null;
-    }
-
-    if (!threadId) {
-      return NextResponse.json(
-        { error: 'No threads available to store this message' },
-        { status: 500 }
-      );
-    }
-
-    const { data, error } = await supabase
-      .from('messages')
-      .insert({ thread_id: threadId, text: trimmed })
-      .select('id, created_at')
-      .maybeSingle();
-
-    if (error || !data) {
-      return NextResponse.json(
-        { error: error?.message ?? 'failed to save message' },
-        { status: 500 }
-      );
-    }
-
-    // Send via Resend using a shared inbox and reply-to set to the user's email.
-    const subject = threadTitle
-      ? `[portfolio] New message in "${threadTitle}"`
-      : '[portfolio] New message';
-    const textBody = [
-      `Thread: ${threadTitle || 'unknown'}`,
-      `From: ${senderEmail}`,
-      '',
-      trimmed,
-    ].join('\n');
-
-    void sendViaResend({
-      to: EMAIL_TO as string,
+    const result = await sendViaResend({
+      to: (EMAIL_TO as string) || '',
       subject,
       text: textBody,
       replyTo: senderEmail || null,
     });
 
-    return NextResponse.json({
-      success: true,
-      messageId: data.id,
-      storedAt: data.created_at ?? new Date().toISOString(),
-    });
+    if (!result.sent && !result.skipped) {
+      return NextResponse.json(
+        { error: result.reason ?? 'failed to send message' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, emailSent: result.sent });
   } catch (err) {
     console.error('contact route failed to send message', err);
     const message =

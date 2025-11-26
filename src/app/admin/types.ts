@@ -1,6 +1,8 @@
 export type Message = {
   id: string;
   text: string;
+  attachment_url?: string | null;
+  attachment_type?: 'image' | 'file' | null;
   time: Date;
 };
 

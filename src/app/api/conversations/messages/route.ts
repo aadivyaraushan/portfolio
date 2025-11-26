@@ -57,6 +57,8 @@ export async function POST(req: Request) {
     return NextResponse.json({
       id: data.id,
       text: data.text,
+      attachment_url: data.attachment_url,
+      attachment_type: (data.attachment_type as 'image' | 'file') ?? null,
       time: now,
     });
   } catch (error) {

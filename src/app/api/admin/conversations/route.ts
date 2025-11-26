@@ -6,6 +6,8 @@ import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 type MessageRow = {
   id: string;
   text: string;
+  attachment_url?: string | null;
+  attachment_type?: string | null;
   created_at?: string | null;
   time?: string | null;
   thread_id?: string;
@@ -14,6 +16,8 @@ type MessageRow = {
 const revive = (row: MessageRow) => ({
   id: row.id,
   text: row.text,
+  attachment_url: row.attachment_url,
+  attachment_type: (row.attachment_type as 'image' | 'file') ?? null,
   time: new Date(row.created_at ?? row.time ?? Date.now()),
 });
 

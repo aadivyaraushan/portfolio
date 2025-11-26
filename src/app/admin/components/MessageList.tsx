@@ -27,6 +27,50 @@ function MessageRow({ message, value, onChange, onSave, onDelete }: MessageRowPr
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
+        {message.attachment_url && (
+          <div className="admin-attachment" style={{ marginTop: '8px' }}>
+            {message.attachment_type === 'image' ? (
+              <img
+                src={message.attachment_url}
+                alt="attachment"
+                style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '4px' }}
+              />
+            ) : (
+              <a
+                href={message.attachment_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 12px',
+                  backgroundColor: '#f0f0f0',
+                  borderRadius: '6px',
+                  color: '#333',
+                  textDecoration: 'none',
+                  fontSize: '13px',
+                  border: '1px solid #e0e0e0',
+                }}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <span>view attachment</span>
+              </a>
+            )}
+          </div>
+        )}
         <div className="admin-msg-meta">{formatAgo(message.time)}</div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

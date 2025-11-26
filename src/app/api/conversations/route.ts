@@ -134,6 +134,8 @@ export async function GET() {
         messages: (messages ?? []).map((msg) => ({
           id: msg.id,
           text: msg.text,
+          attachment_url: msg.attachment_url,
+          attachment_type: (msg.attachment_type as 'image' | 'file') ?? null,
           time: new Date(msg.created_at ?? msg.time ?? Date.now()),
         })),
       });

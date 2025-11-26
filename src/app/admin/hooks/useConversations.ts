@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { ApiConversation, ApiMessage, Conversation, Message } from '../types';
 import { AuthState } from './useAdminAuth';
+import { getSupabaseBrowserClient } from '@/lib/supabaseClient';
 
 const toMessage = (msg: ApiMessage): Message => ({
   id: msg.id,
@@ -123,13 +124,50 @@ export function useConversations({
     onAuthInvalid?.();
   };
 
-  const handleSend = (conversationId: string) => {
+  const handleSend = async (conversationId: string, file?: File | null) => {
     const text = drafts[conversationId]?.trim();
-    if (!text) return;
+    if (!text && !file) return;
+
+    let attachmentUrl: string | null = null;
+    let attachmentType: string | null = null;
+
+    if (file) {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+        const filePath = `${conversationId}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('chat-attachments')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          onError?.(uploadError.message);
+          return;
+        }
+
+        const { data } = supabase.storage
+          .from('chat-attachments')
+          .getPublicUrl(filePath);
+        
+        attachmentUrl = data.publicUrl;
+        attachmentType = file.type.startsWith('image/') ? 'image' : 'file';
+      } catch (err) {
+        onError?.(err instanceof Error ? err.message : 'failed to upload file');
+        return;
+      }
+    }
+
     fetch('/api/admin/messages', {
       method: 'POST',
       ...addAuth({ headers: { 'Content-Type': 'application/json' } }),
-      body: JSON.stringify({ threadId: conversationId, text }),
+      body: JSON.stringify({
+        threadId: conversationId,
+        text,
+        attachment_url: attachmentUrl,
+        attachment_type: attachmentType,
+      }),
     }).then(async (res) => {
       const json = await res.json();
       if (res.status === 401) {

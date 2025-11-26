@@ -172,7 +172,7 @@ function AdminDashboard() {
               onDraftChange={(val) =>
                 setDrafts((prev) => ({ ...prev, [selected.id]: val }))
               }
-              onSend={() => handleSend(selected.id)}
+              onSend={(file) => handleSend(selected.id, file)}
               onDeleteConversation={() => handleDeleteConversation(selected.id)}
               onMessageChange={(messageId, val) =>
                 setMessageEdits((prev) => ({ ...prev, [messageId]: val }))

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ConversationHeader from './ConversationHeader';
 import ConversationMetaForm from './ConversationMetaForm';
 import MessageComposer from './MessageComposer';
@@ -21,7 +22,7 @@ type ConversationDetailPanelProps = {
   onIndexChange: (value: number) => void;
   onSaveMeta: () => void;
   onDraftChange: (value: string) => void;
-  onSend: () => void;
+  onSend: (file?: File | null) => void;
   onDeleteConversation: () => void;
   onMessageChange: (messageId: string, value: string) => void;
   onMessageSave: (messageId: string) => void;
@@ -51,6 +52,8 @@ function ConversationDetailPanel({
   onMessageSave,
   onMessageDelete,
 }: ConversationDetailPanelProps) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   return (
     <div className='admin-card' style={{ gridColumn: 'span 2' }}>
       <ConversationHeader
@@ -76,8 +79,13 @@ function ConversationDetailPanel({
       <MessageComposer
         value={draftValue}
         onChange={onDraftChange}
-        onSubmit={onSend}
-        disabled={!draftValue.trim()}
+        onSubmit={() => {
+          onSend(selectedFile);
+          setSelectedFile(null);
+        }}
+        onFileSelect={setSelectedFile}
+        selectedFile={selectedFile}
+        disabled={!draftValue.trim() && !selectedFile}
       />
 
       <MessageList

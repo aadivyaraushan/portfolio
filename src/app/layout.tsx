@@ -3,7 +3,7 @@ import "./globals.css";
 import { EmojiClientProvider } from "@/components/EmojiClientProvider";
 
 export const metadata: Metadata = {
-  title: "aadivya — dms to self",
+  title: "aadivya's personal website",
   description: "a personal site skinned as an instagram dm thread about what i am building and thinking about",
 };
 

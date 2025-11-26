@@ -1,3 +1,5 @@
+import { track } from '@vercel/analytics/react';
+
 type NewConversationCardProps = {
   newTitle: string;
   newPreview: string;
@@ -68,7 +70,15 @@ function NewConversationCard({
       <button
         className="admin-send"
         type="button"
-        onClick={onCreate}
+        onClick={() => {
+          track('admin_conversation_create', {
+            title: newTitle,
+            pinned: newPinned,
+            hasSeed: Boolean(newSeed.trim()),
+            hasIcon: Boolean(newIcon.trim()),
+          });
+          onCreate();
+        }}
         disabled={!newTitle.trim() || !newPreview.trim()}
       >
         create conversation

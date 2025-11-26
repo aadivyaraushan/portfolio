@@ -1,3 +1,5 @@
+import { track } from '@vercel/analytics/react';
+
 type MessageComposerProps = {
   value: string;
   onChange: (value: string) => void;
@@ -31,6 +33,12 @@ function MessageComposer({
           onChange={(e) => {
             const file = e.target.files?.[0] || null;
             onFileSelect(file);
+            if (file) {
+              track('admin_message_file_selected', {
+                name: file.name,
+                sizeKb: Math.round(file.size / 1024),
+              });
+            }
           }}
         />
         <label htmlFor="file-upload" className="admin-upload-btn">
@@ -48,7 +56,13 @@ function MessageComposer({
         <button
           className="admin-send"
           type="button"
-          onClick={onSubmit}
+          onClick={() => {
+            track('admin_message_submit', {
+              hasFile: Boolean(selectedFile),
+              messageLength: value.trim().length,
+            });
+            onSubmit();
+          }}
           disabled={disabled && !selectedFile}
         >
           add message

@@ -5,6 +5,7 @@ import ChatMessageInput from '@/components/conversations/ChatMessageInput';
 import ChatSendButton from '@/components/conversations/ChatSendButton';
 import ChatSendStatus from '@/components/conversations/ChatSendStatus';
 import ChatSignIn from '@/components/conversations/ChatSignIn';
+import { getMsSinceSessionStart, trackEvent } from '@/lib/analytics';
 
 export type SendState = 'idle' | 'ok' | 'fail' | 'rate-limit';
 
@@ -34,6 +35,11 @@ const ChatComposer = ({
   const handleSend = () => {
     if (sendDisabled || !conversationTitle) return;
     const text = trimmedComposer;
+    trackEvent('contact_send_attempt', {
+      thread: conversationTitle,
+      hasEmail: Boolean(trimmedEmail),
+      msSinceVisit: getMsSinceSessionStart(),
+    });
     setSending(true);
     setRetryAfter(null);
     fetch('/api/contact', {
@@ -53,16 +59,36 @@ const ChatComposer = ({
             const retrySeconds = Number(res.headers.get('Retry-After'));
             setRetryAfter(Number.isFinite(retrySeconds) ? retrySeconds : null);
             setSentState('rate-limit');
+            trackEvent('contact_send_rate_limited', {
+              thread: conversationTitle,
+              retryAfter: retrySeconds,
+              msSinceVisit: getMsSinceSessionStart(),
+            });
           } else {
             setSentState('fail');
+            trackEvent('contact_send_failed', {
+              thread: conversationTitle,
+              status: res.status,
+              msSinceVisit: getMsSinceSessionStart(),
+            });
           }
           return;
         }
         setSentState('ok');
         setComposer('');
+        trackEvent('contact_send_success', {
+          thread: conversationTitle,
+          hasAttachment: false,
+          msSinceVisit: getMsSinceSessionStart(),
+        });
       })
       .catch(() => {
         setSentState('fail');
+        trackEvent('contact_send_failed', {
+          thread: conversationTitle,
+          status: 'network',
+          msSinceVisit: getMsSinceSessionStart(),
+        });
       })
       .finally(() => setSending(false));
   };

@@ -8,6 +8,7 @@ import {
   pastelColorFor,
   sortConversations,
 } from '@/lib/conversationUi';
+import { trackEvent } from '@/lib/analytics';
 
 type ChatSidebarProps = {
   conversations: Conversation[];
@@ -75,7 +76,14 @@ function ChatSidebar({
             className={`conversation ${
               conversation.id === activeId ? 'active' : ''
             }`}
-            onClick={() => onSelect(conversation.id)}
+            onClick={() => {
+              trackEvent('conversation_selected', {
+                id: conversation.id,
+                title: conversation.title,
+                pinned: Boolean(conversation.pinned),
+              });
+              onSelect(conversation.id);
+            }}
             aria-pressed={conversation.id === activeId}
           >
             <div

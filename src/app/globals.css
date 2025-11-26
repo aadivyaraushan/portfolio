@@ -861,6 +861,27 @@ a {
   box-shadow: 0 0 0 4px rgba(27, 143, 242, 0.15);
 }
 
+.composer-status {
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 0 20px 10px;
+  margin: 4px 0 0;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.composer-status--ok {
+  color: #7cd787;
+}
+
+.composer-status--fail {
+  color: #ff8a8a;
+}
+
+.composer-status--warn {
+  color: #ffb347;
+}
+
 .composer-box::placeholder {
   color: var(--muted);
   text-transform: none;
@@ -963,6 +984,10 @@ a {
     padding: 12px;
   }
 
+  .composer-status {
+    padding: 0 12px 10px;
+  }
+
   /* Mobile sidebar overlay wrapper */
   .sidebar--mobile-overlay {
     position: fixed;
@@ -1025,6 +1050,10 @@ a {
     padding: 10px 8px;
     gap: 10px;
     z-index: 10;
+  }
+
+  .composer-status {
+    padding: 0 10px 8px;
   }
 
   .message-bubble {

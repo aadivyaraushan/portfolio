@@ -11,14 +11,14 @@ type ChatSendStatusProps = {
 const ChatSendStatus = ({ state, retryAfter }: ChatSendStatusProps) => {
   if (state === 'ok') {
     return (
-      <div style={{ color: '#7cd787', fontSize: '12px', marginTop: '4px' }}>
+      <div className='composer-status composer-status--ok'>
         sent. i’ll read it soon.
       </div>
     );
   }
   if (state === 'fail') {
     return (
-      <div style={{ color: '#ff8a8a', fontSize: '12px', marginTop: '4px' }}>
+      <div className='composer-status composer-status--fail'>
         couldn’t send. try again?
       </div>
     );
@@ -29,7 +29,7 @@ const ChatSendStatus = ({ state, retryAfter }: ChatSendStatusProps) => {
         ? Math.max(0, Math.round(retryAfter))
         : null;
     return (
-      <div style={{ color: '#ffb347', fontSize: '12px', marginTop: '4px' }}>
+      <div className='composer-status composer-status--warn'>
         too many messages. {seconds ? `you can send again in ${seconds}s.` : 'try again soon.'}
       </div>
     );

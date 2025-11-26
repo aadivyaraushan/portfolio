@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { EmojiClientProvider } from "@/components/EmojiClientProvider";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "aadivya's personal website",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         <EmojiClientProvider>
           {children}
+          <Analytics />
         </EmojiClientProvider>
       </body>
     </html>

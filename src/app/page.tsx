@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ChatSidebar from '@/components/conversations/ChatSidebar';
 import ChatThread from '@/components/conversations/ChatThread';
 import { Conversation, fetchConversations } from '@/lib/conversationStore';
+import { trackEvent } from '@/lib/analytics';
 
 function PageContent() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -11,6 +12,7 @@ function PageContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const visitTracked = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -40,6 +42,21 @@ function PageContent() {
     const found = conversations.find((conv) => conv.id === activeId);
     return found ?? conversations[0];
   }, [activeId, conversations]);
+
+  useEffect(() => {
+    if (visitTracked.current || loading) return;
+    visitTracked.current = true;
+    trackEvent('visit', { conversationsCount: conversations.length });
+  }, [loading, conversations.length]);
+
+  useEffect(() => {
+    if (!activeConversation) return;
+    trackEvent('conversation_viewed', {
+      id: activeConversation.id,
+      title: activeConversation.title,
+      pinned: Boolean(activeConversation.pinned),
+    });
+  }, [activeConversation?.id]);
 
   const handleSelectConversation = (id: string) => {
     setActiveId(id);

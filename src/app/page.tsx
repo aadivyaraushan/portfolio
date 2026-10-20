@@ -1,105 +1,14 @@
-'use client';
+import { preconnect } from 'react-dom';
+import MessagesApp from '@/components/messages/MessagesApp';
+import { loadThreads } from '@/lib/threads/server/loadThreads';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import ChatSidebar from '@/components/conversations/ChatSidebar';
-import ChatThread from '@/components/conversations/ChatThread';
-import { Conversation, fetchConversations } from '@/lib/conversationStore';
-import { trackEvent } from '@/lib/analytics';
+// The page is built on the server with the messages already in the HTML, then cached.
+// It rebuilds at most once a minute, and at once after an admin edit (see revalidateHome).
+// If Supabase fails during a rebuild, Next.js keeps serving the last good page.
+export const revalidate = 60;
 
-function PageContent() {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const visitTracked = useRef(false);
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchConversations();
-        setConversations(data);
-        setActiveId((prev) => prev ?? data[0]?.id ?? null);
-        setError(null);
-      } catch (err) {
-        setConversations([]);
-        setActiveId(null);
-        const message =
-          err instanceof Error
-            ? err.message
-            : 'failed to load conversations from supabase';
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
-
-  const activeConversation = useMemo(() => {
-    if (!conversations.length) return null;
-    const found = conversations.find((conv) => conv.id === activeId);
-    return found ?? conversations[0];
-  }, [activeId, conversations]);
-
-  useEffect(() => {
-    if (visitTracked.current || loading) return;
-    visitTracked.current = true;
-    trackEvent('visit', { conversationsCount: conversations.length });
-  }, [loading, conversations.length]);
-
-  useEffect(() => {
-    if (!activeConversation) return;
-    trackEvent('conversation_viewed', {
-      id: activeConversation.id,
-      title: activeConversation.title,
-      pinned: Boolean(activeConversation.pinned),
-    });
-  }, [activeConversation?.id]);
-
-  const handleSelectConversation = (id: string) => {
-    setActiveId(id);
-    setIsSidebarOpen(false); // close overlay on mobile when a conversation is selected
-  };
-
-  return (
-    <div className='app-shell'>
-      <div className='dm-frame'>
-        <ChatSidebar
-          conversations={conversations}
-          activeId={activeId}
-          onSelect={handleSelectConversation}
-          loading={loading}
-          error={error}
-        />
-        <ChatThread
-          conversation={activeConversation}
-          loading={loading}
-          onOpenSidebar={() => setIsSidebarOpen(true)}
-        />
-      </div>
-
-      {isSidebarOpen && (
-        <div
-          className='sidebar--mobile-overlay'
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          <ChatSidebar
-            conversations={conversations}
-            activeId={activeId}
-            onSelect={handleSelectConversation}
-            loading={loading}
-            error={error}
-          />
-        </div>
-      )}
-    </div>
-  );
+export default async function Home() {
+  preconnect('https://em-content.zobj.net'); // Apple emoji images for thread icons
+  const threads = await loadThreads();
+  return <MessagesApp threads={threads} />;
 }
-
-function Home() {
-  return <PageContent />;
-}
-
-export default Home;

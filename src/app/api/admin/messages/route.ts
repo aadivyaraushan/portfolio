@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdminAuth } from '@/lib/adminAuth';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { revalidateHome } from '@/lib/threads/server/revalidateHome';
 
 type MessageRow = {
   id: string;
@@ -45,5 +46,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error?.message ?? 'failed to append message' }, { status: 500 });
   }
 
+  revalidateHome();
   return NextResponse.json({ message: revive(data) });
 }

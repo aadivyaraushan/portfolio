@@ -1,0 +1,305 @@
+@import 'tailwindcss';
+
+/* Admin dashboard styles. Moved out of globals.css so the public page does not load them. */
+
+:root {
+  --bg: #050505;
+  --panel: #0d0d0f;
+  --panel-2: #111118;
+  --border: #1d1d22;
+  --muted: #8b8b8f;
+  --text: #e7e7ed;
+  --bubble: #1b8ff2;
+  --bubble-text: #eaf3ff;
+  --info-bg: rgba(27, 143, 242, 0.08);
+  --info-border: rgba(27, 143, 242, 0.4);
+  --avatar: #2a2a31;
+  --anim-fast: 140ms;
+  --anim-med: 260ms;
+}
+
+
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  background:
+    radial-gradient(
+      120% 80% at 50% 18%,
+      rgba(27, 143, 242, 0.12),
+      transparent 42%
+    ),
+    var(--bg);
+}
+
+.admin-panel {
+  width: min(1200px, 100%);
+  margin: 18px auto 0;
+  background: var(--panel);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  color: var(--text);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.admin-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-transform: lowercase;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.admin-card {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: micro-pop 0.32s ease;
+}
+
+.admin-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-name {
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.admin-pill {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  text-transform: lowercase;
+}
+
+.admin-pill.muted {
+  color: var(--muted);
+}
+
+.admin-textarea {
+  width: 100%;
+  min-height: 80px;
+  background: #0b0b0e;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.admin-send {
+  align-self: flex-end;
+  padding: 8px 12px;
+  background: var(--bubble);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform var(--anim-fast) ease,
+    box-shadow var(--anim-fast) ease,
+    opacity var(--anim-fast) ease;
+}
+
+.admin-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-error {
+  background: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.4);
+  color: #ff9999;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.admin-send--active {
+  background: rgba(27, 143, 242, 0.2);
+  color: var(--text);
+  border: 1px solid var(--bubble);
+}
+
+.admin-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.admin-msg-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  transition:
+    transform var(--anim-fast) ease,
+    border-color var(--anim-fast) ease,
+    box-shadow var(--anim-fast) ease;
+}
+
+.admin-msg-text {
+  font-size: 13px;
+  text-transform: lowercase;
+}
+
+.admin-msg-meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.admin-delete {
+  background: transparent;
+  border: 1px solid rgba(255, 77, 77, 0.5);
+  color: #ff7171;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition:
+    transform var(--anim-fast) ease,
+    border-color var(--anim-fast) ease,
+    background var(--anim-fast) ease;
+}
+
+.admin-msg-row:hover {
+  transform: translateY(-2px);
+  border-color: rgba(27, 143, 242, 0.4);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.admin-send:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(27, 143, 242, 0.35);
+}
+
+.admin-send:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+.admin-delete:hover {
+  background: rgba(255, 77, 77, 0.08);
+  border-color: rgba(255, 77, 77, 0.8);
+  transform: translateY(-1px);
+}
+
+.admin-delete:active {
+  transform: translateY(0);
+}
+
+.admin-pill input {
+  accent-color: var(--bubble);
+}
+
+.admin-card-header .admin-pill.muted {
+  animation: micro-float 4s ease-in-out infinite;
+}
+
+
+
+@media (max-width: 900px) {
+  .app-shell {
+    padding: 12px 10px;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-shell {
+    padding: 10px 8px;
+  }
+
+  .admin-panel {
+    margin: 10px auto 0;
+    padding: 12px;
+    width: 100%;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .app-shell {
+    padding: 8px 6px;
+  }
+
+  .admin-title {
+    font-size: 13px;
+  }
+}
+
+
+@keyframes micro-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes micro-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}

@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { requireAdminAuth } from '@/lib/adminAuth';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { revalidateHome } from '@/lib/threads/server/revalidateHome';
 
 type MessageRow = {
   id: string;
@@ -111,6 +112,7 @@ export async function POST(req: Request) {
     if (message) seededMessages = [revive(message)];
   }
 
+  revalidateHome();
   return NextResponse.json({
     conversation: {
       id: thread.id,
@@ -168,6 +170,7 @@ export async function PATCH(req: Request) {
     );
   }
 
+  revalidateHome();
   return NextResponse.json({
     conversation: {
       id: data.id,
@@ -207,5 +210,6 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: threadError.message }, { status: 500 });
   }
 
+  revalidateHome();
   return NextResponse.json({ success: true });
 }

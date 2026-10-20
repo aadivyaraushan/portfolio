@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { requireAdminAuth } from '@/lib/adminAuth';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { revalidateHome } from '@/lib/threads/server/revalidateHome';
 
 type Params = {
   params: Promise<{ id: string }>;
@@ -22,6 +23,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateHome();
   return NextResponse.json({ success: true });
 }
 
@@ -45,6 +47,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (error || !data) {
     return NextResponse.json({ error: error?.message ?? 'failed to update message' }, { status: 500 });
   }
+  revalidateHome();
   return NextResponse.json({
     message: {
       id: data.id,

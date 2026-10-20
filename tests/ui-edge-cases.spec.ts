@@ -1,14 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
 
-type PublicConversation = {
-  id: string;
-  title: string;
-  preview: string;
-  pinned?: boolean;
-  icon?: string;
-  messages: { id: string; text: string; time: string }[];
-};
-
 type AdminConversation = {
   id: string;
   title: string;
@@ -17,37 +8,6 @@ type AdminConversation = {
   icon?: string;
   messages: { id: string; text: string; time: string }[];
 };
-
-function publicFixtures(): PublicConversation[] {
-  return [
-    {
-      id: 'pinned-1',
-      title: 'pinned chat',
-      preview: 'always on top',
-      pinned: true,
-      messages: [
-        { id: 'pm-1', text: 'Pinned message from admin', time: '2024-01-01T13:00:00.000Z' },
-      ],
-    },
-    {
-      id: 'recent-1',
-      title: 'recent chat',
-      preview: 'latest thread',
-      messages: [
-        { id: 'rc-1', text: 'Recent hello', time: '2024-01-04T09:05:00.000Z' },
-      ],
-    },
-    {
-      id: 'links-1',
-      title: 'design thread',
-      preview: 'portfolio links',
-      messages: [
-        { id: 'lk-1', text: 'Check https://example.com for more', time: '2024-01-03T10:00:00.000Z' },
-        { id: 'lk-2', text: 'Later follow up', time: '2024-01-03T12:30:00.000Z' },
-      ],
-    },
-  ];
-}
 
 function adminFixtures(): AdminConversation[] {
   return [
@@ -246,98 +206,9 @@ async function primeAdminFetch(
   }, { conversations, options });
 }
 
-async function stubPublicConversations(page: Page, conversations = publicFixtures()) {
-  await page.route('**/api/conversations', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(conversations),
-    })
-  );
-}
-
 async function stubAdminWithAppendFailure(page: Page) {
   await primeAdminFetch(page, adminFixtures(), { failMessages: true });
 }
-
-test.describe('Public chat edge cases', () => {
-  test('surfaces fetch errors and hides the composer when conversations fail to load', async ({ page }) => {
-    await page.route('**/api/conversations', (route) =>
-      route.fulfill({
-        status: 500,
-        contentType: 'application/json',
-        body: JSON.stringify({ error: 'database offline' }),
-      })
-    );
-
-    await page.goto('/');
-
-    await expect(page.getByText(/failed to fetch conversations/i)).toBeVisible();
-    await expect(page.locator('.conversation')).toHaveCount(0);
-    await expect(page.getByPlaceholder(/message\.\.\./i)).toHaveCount(0);
-  });
-
-  test('requires valid email and length, and surfaces rate limits when sending', async ({ page }) => {
-    await stubPublicConversations(page);
-    await page.route('**/api/contact', (route) =>
-      route.fulfill({
-        status: 429,
-        headers: { 'Retry-After': '7' },
-        contentType: 'application/json',
-        body: JSON.stringify({ error: 'too many messages' }),
-      })
-    );
-
-    await page.goto('/');
-
-    const messageBox = page.getByPlaceholder(/message\.\.\./i);
-    const emailInput = page.getByPlaceholder(/you@example.com/i);
-    const sendButton = page.getByRole('button', { name: /^send$/i });
-
-    await expect(sendButton).toBeDisabled();
-    await messageBox.fill('too short');
-    await expect(sendButton).toBeDisabled();
-    await emailInput.fill('user@example.com');
-    await expect(sendButton).toBeDisabled();
-    await messageBox.fill('This is a long enough message to trigger sending.');
-    await expect(sendButton).toBeEnabled();
-
-    await sendButton.click({ force: true });
-    await expect(page.getByText(/too many messages/i)).toBeVisible();
-    await expect(page.getByText(/7s/)).toBeVisible();
-  });
-
-  test('keeps pinned threads on top and sorts others by last activity', async ({ page }) => {
-    await stubPublicConversations(page, [
-      {
-        id: 'unpinned-latest',
-        title: 'latest unpinned',
-        preview: 'newest content',
-        messages: [{ id: 'm1', text: 'fresh', time: '2024-01-06T10:00:00.000Z' }],
-      },
-      {
-        id: 'pinned-old',
-        title: 'alpha pinned',
-        preview: 'oldest but pinned',
-        pinned: true,
-        messages: [{ id: 'm2', text: 'stale', time: '2024-01-01T08:00:00.000Z' }],
-      },
-      {
-        id: 'unpinned-stale',
-        title: 'older unpinned',
-        preview: 'stale content',
-        messages: [{ id: 'm3', text: 'old', time: '2024-01-04T08:00:00.000Z' }],
-      },
-    ]);
-
-    await page.goto('/');
-
-    const rows = page.locator('.conversation');
-    await expect(rows.nth(0)).toContainText('alpha pinned');
-    await expect(rows.nth(1)).toContainText('latest unpinned');
-    await expect(rows.nth(2)).toContainText('older unpinned');
-  });
-});
 
 test.describe('Admin dashboard edge cases', () => {
   test('shows API errors when conversations fail to load', async ({ page }) => {

@@ -1,16 +1,78 @@
 {
   "threads": [
-    { "id": "about", "title": "about me", "preview": "identities", "pinned": true, "icon": "Bust in Silhouette", "index": 0 },
-    { "id": "projects", "title": "projects", "preview": "what i've worked on", "pinned": true, "icon": "ROCKET", "index": 1 },
-    { "id": "resume", "title": "resume", "preview": "for anything professional", "pinned": false, "icon": "ENVELOPE", "index": 2 },
-    { "id": "old", "title": "older thread", "preview": "stale content", "pinned": false, "icon": null, "index": 3 },
-    { "id": "now", "title": "now", "preview": "daily updates", "pinned": false, "icon": null, "index": 4 }
+    {
+      "id": "about",
+      "title": "About Me",
+      "preview": "Identities",
+      "pinned": true,
+      "icon": "Bust in Silhouette",
+      "index": 0
+    },
+    {
+      "id": "projects",
+      "title": "Projects",
+      "preview": "What I've worked on",
+      "pinned": true,
+      "icon": "ROCKET",
+      "index": 1
+    },
+    {
+      "id": "resume",
+      "title": "Resume",
+      "preview": "For anything professional",
+      "pinned": false,
+      "icon": "ENVELOPE",
+      "index": 2
+    },
+    {
+      "id": "old",
+      "title": "Older Thread",
+      "preview": "Stale content",
+      "pinned": false,
+      "icon": null,
+      "index": 3
+    },
+    {
+      "id": "now",
+      "title": "Now",
+      "preview": "Daily updates",
+      "pinned": false,
+      "icon": null,
+      "index": 4
+    }
   ],
   "messages": [
-    { "id": "m-about", "thread_id": "about", "text": "Hi! I'm Aadivya from the fixture.\n\nCheck out the projects thread!", "created_at": "2025-11-26T18:00:00Z" },
-    { "id": "m-projects", "thread_id": "projects", "text": "LessonGPT: AI lesson planner. Here: https://example.com/lessongpt", "created_at": "2025-11-26T18:00:00Z" },
-    { "id": "m-resume", "thread_id": "resume", "text": "Resume:", "created_at": "2025-11-20T18:00:00Z", "attachment_url": "https://example.com/files/v9087eb5c3p-1764149390534.pdf", "attachment_type": "file" },
-    { "id": "m-old", "thread_id": "old", "text": "Something old", "created_at": "2025-01-04T08:00:00Z" },
-    { "id": "m-now", "thread_id": "now", "text": "4 Dec: Finished a prototype!", "created_at": "2025-12-04T18:00:00Z" }
+    {
+      "id": "m-about",
+      "thread_id": "about",
+      "text": "Hi! I'm Aadivya from the fixture.\n\nCheck out the projects thread!",
+      "created_at": "2025-11-26T18:00:00Z"
+    },
+    {
+      "id": "m-projects",
+      "thread_id": "projects",
+      "text": "LessonGPT: AI lesson planner. Here: https://example.com/lessongpt",
+      "created_at": "2025-11-26T18:00:00Z"
+    },
+    {
+      "id": "m-resume",
+      "thread_id": "resume",
+      "text": "Resume:",
+      "created_at": "2025-11-20T18:00:00Z",
+      "attachment_url": "https://example.com/files/v9087eb5c3p-1764149390534.pdf",
+      "attachment_type": "file"
+    },
+    {
+      "id": "m-old",
+      "thread_id": "old",
+      "text": "Something old",
+      "created_at": "2025-01-04T08:00:00Z"
+    },
+    {
+      "id": "m-now",
+      "thread_id": "now",
+      "text": "4 Dec: Finished a prototype!",
+      "created_at": "2025-12-04T18:00:00Z"
+    }
   ]
 }

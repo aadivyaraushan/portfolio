@@ -35,13 +35,14 @@ async function rows(table, columns) {
   return data;
 }
 
-const threads = await rows('threads', 'id, title');
+const threads = await rows('threads', 'id, title, preview');
 const messages = await rows('messages', '*');
 const plan = planThreadCopy(threads, messages, copy);
 
 console.log(`Supabase project: ${new URL(url).host}`);
 for (const t of plan.threads) {
-  const status = t.changed ? `keep 1, delete ${t.deleteIds.length}, rewrite text` : 'no change';
+  const rename = t.threadUpdate ? `, rename to ${JSON.stringify(t.threadUpdate)}` : '';
+  const status = t.changed ? `keep 1, delete ${t.deleteIds.length}, rewrite text${rename}` : 'no change';
   console.log(`- ${t.title}: ${status}`);
 }
 if (plan.missingInDb.length) console.warn('Copy entries with no thread in the database:', plan.missingInDb);
@@ -59,6 +60,10 @@ writeFileSync(backupPath, JSON.stringify({ threads, messages }, null, 2));
 console.log(`\nBackup of ${messages.length} message rows: ${backupPath}`);
 
 for (const t of plan.threads.filter((p) => p.changed)) {
+  if (t.threadUpdate) {
+    const { error: renameError } = await supabase.from('threads').update(t.threadUpdate).eq('id', t.threadId);
+    if (renameError) throw new Error(`${t.title}: rename failed: ${renameError.message}`);
+  }
   if (!t.keepId) {
     console.warn(`- ${t.title}: no message to rewrite, skipped`);
     continue;
@@ -72,6 +77,6 @@ for (const t of plan.threads.filter((p) => p.changed)) {
   console.log(`- ${t.title}: done`);
 }
 
-const after = planThreadCopy(await rows('threads', 'id, title'), await rows('messages', '*'), copy);
+const after = planThreadCopy(await rows('threads', 'id, title, preview'), await rows('messages', '*'), copy);
 const pending = after.threads.filter((t) => t.changed).map((t) => t.title);
 console.log(pending.length ? `Still different: ${pending.join(', ')}` : 'Check passed: every thread now has its one new message.');

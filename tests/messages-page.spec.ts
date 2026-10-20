@@ -39,19 +39,19 @@ test.describe('Messages page', () => {
 
   test('lists pinned threads first, then the rest by newest message', async ({ page }) => {
     await page.goto('/');
-    await expect(list(page).locator('.pinned__name')).toHaveText(['about me', 'projects']);
-    await expect(list(page).locator('.row__title')).toHaveText(['now', 'resume', 'older thread']);
+    await expect(list(page).locator('.pinned__name')).toHaveText(['About Me', 'Projects']);
+    await expect(list(page).locator('.row__title')).toHaveText(['Now', 'Resume', 'Older Thread']);
   });
 
   test('opens a thread from the list and renders links and files', async ({ page }) => {
     await page.goto('/');
-    await list(page).getByRole('button', { name: /projects/ }).click();
-    await expect(thread(page).getByRole('heading', { name: 'projects' })).toBeVisible();
+    await list(page).getByRole('button', { name: /Projects/ }).click();
+    await expect(thread(page).getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
     await expect(thread(page).getByRole('link', { name: 'example.com/lessongpt' })).toHaveAttribute(
       'href',
       'https://example.com/lessongpt',
     );
-    await list(page).getByRole('button', { name: /resume/ }).click();
+    await list(page).getByRole('button', { name: /Resume/ }).click();
     await expect(thread(page).getByRole('link', { name: /Resume\.pdf/ })).toBeVisible();
   });
 
@@ -65,7 +65,7 @@ test.describe('Messages page', () => {
     await expect(page.getByPlaceholder('iMessage')).toHaveValue('');
     expect(sent.at(-1)).toMatchObject({
       text: 'A detailed message that should be sent.',
-      threadTitle: 'about me',
+      threadTitle: 'About Me',
       fromEmail: 'sender@example.com',
     });
   });
@@ -88,8 +88,8 @@ test.describe('Messages page', () => {
     await page.getByRole('button', { name: 'All conversations' }).click();
     await expect(list(page)).toBeVisible();
     await expect(thread(page)).toBeHidden();
-    await list(page).getByRole('button', { name: /now/ }).click();
-    await expect(thread(page).getByRole('heading', { name: 'now' })).toBeVisible();
+    await list(page).getByRole('button', { name: /Now/ }).click();
+    await expect(thread(page).getByRole('heading', { name: 'Now', exact: true })).toBeVisible();
   });
 
   test('text fields have no browser outline, but keyboard users still see which field has focus', async ({ page }) => {
@@ -132,6 +132,6 @@ test.describe('Messages page', () => {
     await expect(page.getByText('Messages could not load.')).toBeVisible();
     await mockSupabase('__reset');
     await page.getByRole('button', { name: 'Try Again' }).click();
-    await expect(thread(page).getByRole('heading', { name: 'about me' })).toBeVisible();
+    await expect(thread(page).getByRole('heading', { name: 'About Me', exact: true })).toBeVisible();
   });
 });

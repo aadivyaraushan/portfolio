@@ -1,7 +1,7 @@
 import { planThreadCopy } from '../../../scripts/content/planThreadCopy';
 
 const threads = [
-  { id: 't1', title: 'about me' },
+  { id: 't1', title: 'about me', preview: 'identities' },
   { id: 't2', title: 'resume' },
   { id: 't3', title: 'not in copy' },
 ];
@@ -22,6 +22,7 @@ describe('planThreadCopy', () => {
       keepId: 'c',
       deleteIds: ['a', 'b'],
       text: "Hi! I'm Aadivya.",
+      threadUpdate: null,
       changed: true,
     });
   });
@@ -54,5 +55,21 @@ describe('planThreadCopy', () => {
     expect(() => planThreadCopy(threads, twoFiles, { t2: { title: 'resume', text: 'Resume:' } })).toThrow(
       /resume.*2 attachments/,
     );
+  });
+
+  it('renames the thread and its tagline when the copy gives new ones', () => {
+    const plan = planThreadCopy(
+      threads,
+      [{ id: 'c', thread_id: 't1', text: 'New', created_at: '2025-11-26T00:00:00Z' }],
+      { t1: { title: 'About Me', tagline: 'Identities', text: 'New' } },
+    );
+    expect(plan.threads[0]).toMatchObject({ threadUpdate: { title: 'About Me', preview: 'Identities' }, changed: true });
+  });
+
+  it('leaves the thread name alone when it already matches, or the copy gives no tagline', () => {
+    const same = planThreadCopy(threads, messages, { t1: { title: 'about me', tagline: 'identities', text: 'x' } });
+    expect(same.threads[0].threadUpdate).toBeNull();
+    const noTagline = planThreadCopy(threads, messages, { t1: { title: 'About Me', text: 'x' } });
+    expect(noTagline.threads[0].threadUpdate).toEqual({ title: 'About Me' });
   });
 });

@@ -1,38 +1,47 @@
 {
   "1c278c1a-a341-44e0-9f2a-dc53993a5c29": {
-    "title": "about me",
-    "text": "Hi! I'm Aadivya.\n\nI'm an 18 y/o founder, researcher and CS student @ UIUC.\n\nTo learn how to make videogames, I started learning how to code at ages 8–10, learning JS, Python and C++ (2015–2017). Later, from 10–13, I did a lot of game dev with Unity, Unreal Engine, C# and C++ (2017–2020).\n\nFrom 14–15, my interests shifted towards software dev as I realized it was way more \"useful\", so I started working on software apps w/ JS, React, Next, Node, SQL/NoSQL, etc. (2021–2022). In 2022, after Ethereum started using proof-of-stake and blockchain became immensely more feasible for actually useful apps, I also worked on a few blockchain products.\n\nIn early 2023, after trying ChatGPT for the first time, I got really interested in generative AI's potential for making useful products, and since then I've been working on a lot of useful AI B2C/B2B products—that's my current area of interest.\n\nCheck out the projects and research threads to learn more about my work!"
+    "title": "About Me",
+    "tagline": "Identities",
+    "text": "Hi! I'm Aadivya.\n\nI'm a 19 y/o founder, researcher and CS student @ UIUC.\n\nTo learn how to make videogames, I started learning how to code at ages 8–10, learning JS, Python and C++ (2015–2017). Later, from 10–13, I did a lot of game dev with Unity, Unreal Engine, C# and C++ (2017–2020).\n\nFrom 14–15, my interests shifted towards software dev as I realized it was way more \"useful\", so I started working on software apps w/ JS, React, Next, Node, SQL/NoSQL, etc. (2021–2022). In 2022, after Ethereum started using proof-of-stake and blockchain became immensely more feasible for actually useful apps, I also worked on a few blockchain products.\n\nIn early 2023, after trying ChatGPT for the first time, I got really interested in generative AI's potential for making useful products, and since then I've been working on a lot of useful AI B2C/B2B products—that's my current area of interest.\n\nCheck out the projects and research threads to learn more about my work!"
   },
   "29ffc0f3-6a1b-4280-9c0d-5aeb936752a5": {
-    "title": "projects",
+    "title": "Projects",
+    "tagline": "What I've worked on",
     "text": "From most substantial to least:\n\nRefr: AI tool that guarantees internships by matching students with highly-likely referrers. Currently in development.\n\nPlan-Tain: Automatic college schedule generator that generates the best possible schedule based on a user's preferences. Currently in development. Prototype available at plan-tain.com\n\nLessonGPT: AI lesson planner. Launched and had 120+ teachers across the UAE plan 1300+ lessons with the app. Featured on international news for this product: https://gulfnews.com/uae/education/role-reversal-dubai-student-enables-teachers-to-plan-better-save-time-with-ai-1.99366790\n\nChatSocratic: An AI tool to help students iteratively learn concepts through the Socratic method and difficulty-adapted problem generation. Here: https://github.com/aadivyaraushan/chat-socratic\n\nAutoCorrect: Automatic AI exam corrector. Here: https://github.com/aadivyaraushan/automatic-exam-corrector\n\nSupplyBlock: An Ethereum-based supply chain platform. Here: https://github.com/aadivyaraushan/supply-chain-blockchain\n\nAn Ethereum-based version of Udemy: https://github.com/aadivyaraushan/course-marketplace-web3\n\nNocrastination: A productivity-focused videogame helping teens with ADHD be more productive. Here: https://github.com/aadivyaraushan/nocrastination\n\nFlowmodoro: A work-rest timer inspired by the Flowmodoro method. Here: https://github.com/aadivyaraushan/flowmodoro\n\nJot: An always-on-top text file. Here: https://github.com/aadivyaraushan/jot-utility-app\n\nBounce: A 2D physics-based platformer. Here: https://github.com/Xx-KaixX/bounce"
   },
   "5f076415-ca80-4305-9877-345d2a5f60ef": {
-    "title": "research",
+    "title": "Research",
+    "tagline": "What I've discovered",
     "text": "I published my first paper when I was 15. It was about the effect of gamification on adolescent productivity and was based on an app I made when I was 14 (more info on that can be found in the projects thread). Paper is here: https://www.ijnrd.org/papers/IJNRD2304333.pdf\n\nLater I worked on a research paper about the extent to which AI can automate exam correction (paper here: https://docs.google.com/document/d/1nGW64S67sgdOMj995O3g0Bfdl2k_EC_0vhrPwF9Ky58/edit?usp=sharing). Published this as my IB extended essay."
   },
   "b70500bf-ff8b-4db0-97b6-0d256523ea28": {
-    "title": "resume",
+    "title": "Resume",
+    "tagline": "For anything professional",
     "text": "Resume:"
   },
   "470b2010-59db-42ba-83b4-5cce1998d329": {
-    "title": "quick links",
+    "title": "Quick Links",
+    "tagline": "Where to find me",
     "text": "Here's everywhere you can find me:\n\nInstagram: https://www.instagram.com/aadivyaaaaaar/\nX: https://x.com/aadivyaraushan\nLinkedIn: https://www.linkedin.com/in/aadivya-raushan-245264240/\nGitHub: https://github.com/aadivyaraushan\nEmail: raushan2@illinois.edu\nDiscord: ign_kai"
   },
   "6808e5a7-f9c4-46b0-95c8-d37e8ae88675": {
-    "title": "now",
+    "title": "Now",
+    "tagline": "Daily/weekly updates",
     "text": "25 Nov: Finished this personal website!\n\n4 Dec: Finished prototype for a side project I've been working on for a while! Gonna do beta testing tomorrow. Also had a major breakthrough in my understanding of how to learn things quickly."
   },
   "7d16c9d8-c46d-46a9-aa94-0cbb3501af14": {
-    "title": "reading list",
+    "title": "Reading List",
+    "tagline": "Reading is underrated",
     "text": "I'm currently reading Source Code by Bill Gates.\n\nAfter this, I'm gonna read:\n- Brave New World\n- The Alchemist\n- The Martian\n\nIn the recent past, I've read: Einstein: His Life and Universe, Influence: The Psychology of Persuasion, Awakening Your Ikigai, Daredevil by Brian Michael Bendis and Chip Zdarsky, Elon Musk, 4000 Weeks, Never Eat Alone, The Hitchhiker's Guide to the Galaxy (all 5 books—that 6th one doesn't count), Ultimate Spider-Man, Digital Minimalism, The Feynman Memoirs, Batman by Chip Zdarsky, Nightwing by Tom Taylor, Spider-Man: Life Story, 1984, Ready Player One"
   },
   "64d15c89-7f96-4223-9006-b4bfd4a35aee": {
-    "title": "principles",
-    "text": "Some principles I've developed over the past 18 years of being alive:\n\n- Value self-awareness and honesty above approval\n- Respect and guard your attention\n- Focus. Commit deeply to what's important.\n- Practice humility in front of experience\n- Act with optimism and take initiative\n- Communicate with clarity and precision\n- Accept reality and live in the present\n- Embrace diversity, openness, and adaptability\n- Let consistency and perseverance guide progress\n- Avoid zero-sum thinking; seek positive-sum outcomes wherever possible\n- Don't make assumptions without evidence (literally the perfect anxiety cure)\n- Use embarrassment and discomfort as opportunities to grow\n- Value solitude\n- No concept/idea/procedure is ever \"complex\". Finding things \"complex\" just means that you don't sufficiently understand the fundamentals intuitively enough."
+    "title": "Principles",
+    "tagline": "How I try to live",
+    "text": "Some principles I've developed over the past 19 years of being alive:\n\n- Value self-awareness and honesty above approval\n- Respect and guard your attention\n- Focus. Commit deeply to what's important.\n- Practice humility in front of experience\n- Act with optimism and take initiative\n- Communicate with clarity and precision\n- Accept reality and live in the present\n- Embrace diversity, openness, and adaptability\n- Let consistency and perseverance guide progress\n- Avoid zero-sum thinking; seek positive-sum outcomes wherever possible\n- Don't make assumptions without evidence (literally the perfect anxiety cure)\n- Use embarrassment and discomfort as opportunities to grow\n- Value solitude\n- No concept/idea/procedure is ever \"complex\". Finding things \"complex\" just means that you don't sufficiently understand the fundamentals intuitively enough."
   },
   "caa06717-56b8-40e0-9bd5-70ff8c6f7e23": {
-    "title": "fav artists/music",
+    "title": "Fav Artists/Music",
+    "tagline": "Stuff I have on repeat",
     "text": "It's literally me and my headphones against the world.\n\nFav hip-hop artists: Kanye West, Drake, Jay-Z, Kendrick Lamar, Travis Scott, MF DOOM, Tyler, the Creator\n\nFav pop artists: Billie Eilish, Charli XCX, The Weeknd, MJ, Olivia Rodrigo\n\nFav artists in other genres: Tame Impala, Arctic Monkeys, Nirvana\n\nFav hip-hop albums: MBDTF, Yeezus, KSG, Graduation, Late Registration, The College Dropout, The Black Album, The Blueprint, Watch the Throne, 4:44, Madvillainy, DAMN., Mr. Morale, GKMC, If You're Reading This It's Too Late, Take Care, Her Loss, More Life (evidently, I really like hip-hop)\n\nFav pop albums: 1989, Hit Me Hard and Soft, Brat, Short n' Sweet, Sour, Guts, Harry's House\n\nFav albums in other genres: Currents, The Slow Rush, Nevermind, The Social Network OST, the Oppenheimer OST (OSTs are underrated)"
   }
 }

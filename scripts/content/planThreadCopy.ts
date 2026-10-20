@@ -1,10 +1,11 @@
 // Pure planning step for apply-thread-copy.mjs: decides, for each thread, which message
-// row to keep (and rewrite) and which rows to delete. No I/O, so a test can cover it.
+// row to keep (and rewrite), which rows to delete, and whether the thread's title or
+// tagline changes. No I/O, so a test can cover it.
 
-export type CopyEntry = { title: string; text: string };
+export type CopyEntry = { title: string; tagline?: string; text: string };
 export type CopyFile = Record<string, CopyEntry>;
 
-type ThreadRow = { id: string; title: string | null };
+type ThreadRow = { id: string; title: string | null; preview?: string | null };
 type MessageRow = { id: string; thread_id: string; text: string | null; created_at: string | null; attachment_url?: string | null };
 
 export type ThreadPlan = {
@@ -13,6 +14,8 @@ export type ThreadPlan = {
   keepId: string | null;
   deleteIds: string[];
   text: string;
+  // Fields to write to the threads row, or null when the title and tagline already match.
+  threadUpdate: { title?: string; preview?: string } | null;
   changed: boolean;
 };
 
@@ -33,15 +36,22 @@ export function planThreadCopy(threads: ThreadRow[], messages: MessageRow[], cop
         throw new Error(`"${thread.title}" has ${withFiles.length} attachments. Merge it by hand so no file is deleted.`);
       }
       const keep = withFiles[0] ?? rows.at(-1) ?? null;
-      const text = copy[thread.id].text;
+      const entry = copy[thread.id];
+      const text = entry.text;
       const deleteIds = rows.filter((m) => m !== keep).map((m) => m.id);
+      const threadUpdate = {
+        ...(entry.title !== thread.title ? { title: entry.title } : {}),
+        ...(entry.tagline !== undefined && entry.tagline !== thread.preview ? { preview: entry.tagline } : {}),
+      };
+      const renamed = Object.keys(threadUpdate).length > 0;
       return {
         threadId: thread.id,
         title: thread.title ?? '',
         keepId: keep?.id ?? null,
         deleteIds,
         text,
-        changed: deleteIds.length > 0 || keep?.text !== text,
+        threadUpdate: renamed ? threadUpdate : null,
+        changed: renamed || deleteIds.length > 0 || keep?.text !== text,
       };
     });
   const ids = new Set(threads.map((t) => t.id));

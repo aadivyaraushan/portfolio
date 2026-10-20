@@ -45,8 +45,8 @@ describe('loadThreads', () => {
     expect(threads.map((t) => t.id)).toEqual(['t1', 't2']);
     expect(threads[0].messages.map((m) => m.id)).toEqual(['m1', 'm2']);
     expect(threads[0]).toMatchObject({
-      title: 'about me',
-      tagline: 'identities',
+      title: 'About Me',
+      tagline: 'Identities',
       pinned: true,
       icon: { alt: '🚀', src: expect.stringContaining('rocket_1f680.png') },
     });

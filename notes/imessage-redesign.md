@@ -51,7 +51,7 @@ then run `next start` and time it in Playwright with CDP network and CPU throttl
 | -------- | --- |
 | ISR at 60 s, plus revalidate on admin edits | Fast cached HTML. Admin edits still show at once. |
 | Pinned threads keep the admin `index` order | The old code sorted them A–Z, which ignored the order set in admin. |
-| Thread titles stay lowercase | The old API lowercased them, and the lowercase titles are part of the voice. Easy to change in `loadThreads.ts`. |
+| Titles in Title Case ("About Me"), taglines in sentence case ("What I've worked on"), stored that way in the database | Owner asked for capitals (2026-10-20). The page shows the stored text as is, so admin edits keep their casing. Set in `thread-copy.json` (`title`, `tagline`). |
 | On a phone, the page opens on the first thread, not the list | A first-time visitor sees the "about me" message at once. The back arrow opens the list. |
 | Sender label "Aadivya" above each group | It looks like a group chat in iMessage, and makes clear who is talking. |
 | Message text is turned into links in React, not with `dangerouslySetInnerHTML` | Removes an HTML injection risk. |
@@ -77,6 +77,16 @@ then run `next start` and time it in Playwright with CDP network and CPU throttl
 - Failed before this work and still fail (not touched): `__tests__/lib/supabaseAdmin.test.ts`,
   `Inventory.test.tsx`, `PlayerPreview.test.tsx`.
 
+## Applied to production (2026-10-20)
+
+- Vercel project `portfolio` (aadivya.net), team `aadivyaraushans-projects` (personal Hobby account). Pushing `main` deploys it.
+- Supabase project `hdfsuiekskvukweylogn`. Before the apply: 60 message rows, newest from 2025-12-14 (same data the copy was written from).
+- `apply-thread-copy.mjs --apply`: kept and rewrote 9 rows, deleted 51. Check passed.
+- Backup of all 60 old rows: `scripts/content/backups/messages-2026-10-20T05-08-38-545Z.json` (gitignored, on this computer only).
+- Commit `18dd552` pushed to `main`.
+- First deploy of `18dd552` failed: the build passed, but Vercel blocked Next.js 15.5.2 as a vulnerable version. Upgraded to `next` 15.5.28 and `react`/`react-dom` 19.1.10 (same-minor security patches, released 2026-10-14).
+- Second run (same day): capitalized all 9 titles and taglines, and changed the age to 19 ("I'm a 19 y/o", "past 19 years"). 0 rows deleted. Backup: `scripts/content/backups/messages-2026-10-20T05-11-27-040Z.json`.
+
 ## Independent review (2026-10-19) and fixes
 
 A fresh reviewer agent checked the work against its own rubric. What it found and what changed:
@@ -89,14 +99,12 @@ A fresh reviewer agent checked the work against its own rubric. What it found an
 | Copy script would delete a second attachment in one thread. | `planThreadCopy` now stops with an error for that thread. Unit test. |
 | Try Again on the error page did not fetch again (`reset()` alone does not, in Next.js 15). | `router.refresh()` + `reset()` in `startTransition`. E2E test fails Supabase, recovers it, clicks Try Again. |
 | Text fields had no focus cue for keyboard users. | Composer border darkens, "From:" turns blue, search gets a ring. E2E test. |
-| Titles are lowercase while message text is now capitalized. | Left as is. Owner's call. |
+| Titles are lowercase while message text is now capitalized. | Owner chose capitals. Fixed on 2026-10-20 (see above). |
 
 Search done for the same bug class: every route in `src/app/api`. Only `/api/admin/*` is behind `middleware.ts`.
 `/api/contact` is public on purpose. `src/lib/gmail.ts` is unused, but nothing in the web app reaches it, so it was left.
 
 ## Open items
 
-- Titles and taglines stay lowercase (`loadThreads.ts`). Change only if the owner wants capitals there too.
-- The "18 y/o" text in "about me" and "principles" can be out of date.
 - A deploy builds `/` from live Supabase. If Supabase is down at build time, the build fails and the old deploy keeps serving (seen with the mock stopped).
 - `src/lib/gmail.ts` is dead code.

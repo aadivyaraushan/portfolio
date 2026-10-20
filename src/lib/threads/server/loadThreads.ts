@@ -98,11 +98,11 @@ export async function loadThreads(source: ThreadsSource = supabaseThreadsSource(
   }
 
   const threads = threadRows.map((row): Thread => {
-    const title = (row.title ?? '').toLowerCase();
+    const title = row.title ?? '';
     return {
       id: row.id,
       title,
-      tagline: (row.preview ?? '').toLowerCase(),
+      tagline: row.preview ?? '',
       pinned: Boolean(row.pinned),
       icon: resolveEmoji(row.icon),
       messages: (messagesByThread.get(row.id) ?? []).sort(byTime).map((m) => ({

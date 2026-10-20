@@ -3,10 +3,13 @@ import { StampTime } from '@/components/messages/shared/LocalTime';
 import AttachmentBubble from '@/components/messages/thread/AttachmentBubble';
 import MessageText from '@/components/messages/thread/MessageText';
 import type { ShownMessage } from '@/components/messages/thread/types';
+import type { AdminUi } from '@/components/messages/admin/loadAdminUi';
 
 type TimelineProps = {
   messages: ShownMessage[];
   onRetry: (id: string) => void;
+  /** Given only to a signed-in admin: wraps each of the owner's messages with edit controls. */
+  AdminMessage?: AdminUi['AdminMessage'];
 };
 
 function Delivery({ message, isLatestVisitor }: { message: ShownMessage; isLatestVisitor: boolean }) {
@@ -25,7 +28,7 @@ function Delivery({ message, isLatestVisitor }: { message: ShownMessage; isLates
   return <p className='delivery'>{message.delivery === 'sending' ? 'Sending…' : 'Delivered'}</p>;
 }
 
-export default function Timeline({ messages, onRetry }: TimelineProps) {
+export default function Timeline({ messages, onRetry, AdminMessage }: TimelineProps) {
   const latestVisitorId = messages.filter((m) => m.from === 'visitor').at(-1)?.id;
 
   return (
@@ -41,14 +44,8 @@ export default function Timeline({ messages, onRetry }: TimelineProps) {
         const { message, tail, showSender } = item;
         const failed = message.from === 'visitor' && (message.delivery === 'failed' || message.delivery === 'rate-limited');
         const bubbleTail = tail && !message.attachment;
-        return (
-          <li
-            key={item.key}
-            className={`msg${tail ? ' msg--group-end' : ''}`}
-            data-from={message.from}
-            data-delivery={message.from === 'visitor' ? message.delivery : undefined}
-          >
-            {showSender ? <span className='msg__sender'>Aadivya</span> : null}
+        const content = (
+          <>
             {message.text ? (
               <div className='msg__line'>
                 {failed ? (
@@ -62,6 +59,17 @@ export default function Timeline({ messages, onRetry }: TimelineProps) {
               </div>
             ) : null}
             {message.attachment ? <AttachmentBubble attachment={message.attachment} /> : null}
+          </>
+        );
+        return (
+          <li
+            key={item.key}
+            className={`msg${tail ? ' msg--group-end' : ''}`}
+            data-from={message.from}
+            data-delivery={message.from === 'visitor' ? message.delivery : undefined}
+          >
+            {showSender ? <span className='msg__sender'>Aadivya</span> : null}
+            {AdminMessage && message.from === 'me' ? <AdminMessage message={message}>{content}</AdminMessage> : content}
             <Delivery message={message} isLatestVisitor={message.id === latestVisitorId} />
           </li>
         );

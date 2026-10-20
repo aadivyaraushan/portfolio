@@ -6,6 +6,8 @@ const thread = (id: string, pinned: boolean, lastAt: string, text = 'hello'): Th
   title: id,
   tagline: `${id} tagline`,
   pinned,
+  iconName: '',
+  order: 0,
   icon: null,
   messages: [{ id: `${id}-m`, text, sentAt: lastAt, attachment: null }],
 });

@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { defineConfig } from '@playwright/test';
 
-const ADMIN_BASIC_USER = process.env.ADMIN_BASIC_USER ?? 'admin';
-const ADMIN_BASIC_PASS = process.env.ADMIN_BASIC_PASS ?? 'password';
+export const ADMIN_BASIC_USER = process.env.ADMIN_BASIC_USER ?? 'admin';
+export const ADMIN_BASIC_PASS = process.env.ADMIN_BASIC_PASS ?? 'password';
 const NEXTAUTH_SECRET =
   process.env.NEXTAUTH_SECRET ?? 'test-secret-please-change';
 const NEXTAUTH_URL = process.env.NEXTAUTH_URL ?? 'http://localhost:3001';
@@ -43,6 +43,10 @@ export default defineConfig({
       HOSTNAME,
       NEXT_PUBLIC_SUPABASE_URL: MOCK_SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY: 'mock-service-key',
+      // Next.js also reads .env.local, which can hold production keys. An empty value here
+      // wins over it, so tests never send real email.
+      RESEND_API_KEY: '',
+      EMAIL_TO: '',
     },
     },
   ],

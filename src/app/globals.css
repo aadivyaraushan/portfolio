@@ -1,5 +1,5 @@
 /* Base styles for every page. Page styles live next to their components:
-   src/components/messages/messages.css (public page), src/app/admin/admin.css (admin). */
+   src/components/messages/messages.css (public page), src/components/messages/admin/admin.css (admin). */
 
 html,
 body {

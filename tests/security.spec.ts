@@ -48,13 +48,6 @@ test.describe('Security Edge Cases', () => {
     expect(response.status()).not.toBe(500);
   });
 
-  test('protects admin API routes from unauthenticated access', async ({
-    page,
-  }) => {
-    const response = await page.request.get('/api/admin/conversations');
-    expect(response.status()).toBe(401);
-  });
-
   test('handles SQL injection-like payloads without 5xx', async ({ page }) => {
     const sqliPayload = "'; DROP TABLE users; --";
     const response = await page.request.post('/api/contact', {

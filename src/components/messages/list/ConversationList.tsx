@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import type { Thread } from '@/lib/threads/types';
 import ThreadAvatar from '@/components/messages/shared/ThreadAvatar';
 import { ListTime } from '@/components/messages/shared/LocalTime';
@@ -10,6 +11,8 @@ type ConversationListProps = {
   query: string;
   onQueryChange: (value: string) => void;
   onSelect: (id: string) => void;
+  /** Admin buttons (new conversation, sign out). Empty for visitors. */
+  headerActions?: ReactNode;
 };
 
 const lastMessage = (thread: Thread) => thread.messages.at(-1);
@@ -22,7 +25,14 @@ function previewText(thread: Thread) {
   return last.attachment ? `Attachment: ${last.attachment.name}` : thread.tagline;
 }
 
-export default function ConversationList({ threads, activeId, query, onQueryChange, onSelect }: ConversationListProps) {
+export default function ConversationList({
+  threads,
+  activeId,
+  query,
+  onQueryChange,
+  onSelect,
+  headerActions,
+}: ConversationListProps) {
   const pinned = threads.filter((t) => t.pinned);
   const rest = threads.filter((t) => !t.pinned);
   const searching = query.trim().length > 0;
@@ -31,6 +41,7 @@ export default function ConversationList({ threads, activeId, query, onQueryChan
     <nav className='conversations' aria-label='Conversations'>
       <header className='conversations__header'>
         <h1>Aadivya</h1>
+        {headerActions}
       </header>
 
       <div className='search'>

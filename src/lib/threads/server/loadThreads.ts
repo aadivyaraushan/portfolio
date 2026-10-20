@@ -9,6 +9,7 @@ type ThreadRow = {
   preview: string | null;
   pinned: boolean | null;
   icon: string | null;
+  index?: number | null;
 };
 
 type MessageRow = {
@@ -32,7 +33,7 @@ export function supabaseThreadsSource(): ThreadsSource {
     async fetchThreadRows() {
       const { data, error } = await supabase
         .from('threads')
-        .select('id, title, preview, pinned, icon')
+        .select('id, title, preview, pinned, icon, index')
         .order('index', { ascending: true });
       if (error) throw new Error(`threads query failed: ${error.message}`);
       return data ?? [];
@@ -105,6 +106,8 @@ export async function loadThreads(source: ThreadsSource = supabaseThreadsSource(
       tagline: row.preview ?? '',
       pinned: Boolean(row.pinned),
       icon: resolveEmoji(row.icon),
+      iconName: row.icon ?? '',
+      order: row.index ?? 0,
       messages: (messagesByThread.get(row.id) ?? []).sort(byTime).map((m) => ({
         id: m.id,
         text: m.text ?? '',

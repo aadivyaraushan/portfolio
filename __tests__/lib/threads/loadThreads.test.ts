@@ -49,8 +49,11 @@ describe('loadThreads', () => {
       tagline: 'Identities',
       pinned: true,
       icon: { alt: '🚀', src: expect.stringContaining('rocket_1f680.png') },
+      // The raw values the admin details form starts from.
+      iconName: 'ROCKET',
+      order: 0,
     });
-    expect(threads[1]).toMatchObject({ tagline: '', pinned: false, icon: null });
+    expect(threads[1]).toMatchObject({ tagline: '', pinned: false, icon: null, iconName: '', order: 1 });
     expect(threads[1].messages[0]).toEqual({
       id: 'm3',
       text: 'now',

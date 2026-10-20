@@ -25,5 +25,9 @@ export type Thread = {
   tagline: string;
   pinned: boolean;
   icon: ThreadIcon | null;
+  /** The stored emoji name, e.g. "ROCKET". The admin details form edits it. */
+  iconName: string;
+  /** The stored sort number for pinned threads. The admin details form edits it. */
+  order: number;
   messages: ThreadMessage[];
 };

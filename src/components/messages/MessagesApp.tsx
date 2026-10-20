@@ -9,6 +9,7 @@ import { trackEvent } from '@/lib/analytics';
 import ConversationList from '@/components/messages/list/ConversationList';
 import ThreadView from '@/components/messages/thread/ThreadView';
 import type { VisitorMessage } from '@/components/messages/thread/types';
+import { useAdminSession } from '@/components/messages/admin/useAdminSession';
 
 const EMAIL_KEY = 'messages:visitor-email';
 
@@ -26,8 +27,11 @@ export default function MessagesApp({ threads }: { threads: Thread[] }) {
   const [email, setEmail] = useState('');
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sent, setSent] = useState<Record<string, VisitorMessage[]>>({});
+  const { ui: adminUi, signOut } = useAdminSession();
+  const [composing, setComposing] = useState(false);
 
-  const active = ordered.find((t) => t.id === activeId) ?? null;
+  // If the open thread is gone (the admin deleted it), show the first one.
+  const active = ordered.find((t) => t.id === activeId) ?? ordered[0] ?? null;
   const shown = useMemo(() => searchThreads(ordered, query), [ordered, query]);
 
   useEffect(() => {
@@ -48,6 +52,7 @@ export default function MessagesApp({ threads }: { threads: Thread[] }) {
     const thread = ordered.find((t) => t.id === id);
     if (thread) trackEvent('conversation_selected', { id, title: thread.title, pinned: thread.pinned });
     setActiveId(id);
+    setComposing(false);
     setView('thread');
   };
 
@@ -103,8 +108,33 @@ export default function MessagesApp({ threads }: { threads: Thread[] }) {
         query={query}
         onQueryChange={setQuery}
         onSelect={select}
+        headerActions={
+          adminUi ? (
+            <adminUi.AdminListActions
+              onNew={() => {
+                setComposing(true);
+                setView('thread');
+              }}
+              onSignOut={() => {
+                setComposing(false);
+                void signOut();
+              }}
+            />
+          ) : null
+        }
       />
-      {active ? (
+      {adminUi && composing ? (
+        <adminUi.NewThreadPane
+          onCreated={(id) => {
+            setActiveId(id);
+            setComposing(false);
+          }}
+          onCancel={() => {
+            setComposing(false);
+            setView('list');
+          }}
+        />
+      ) : active ? (
         <ThreadView
           key={active.id}
           thread={active}
@@ -116,6 +146,11 @@ export default function MessagesApp({ threads }: { threads: Thread[] }) {
           onSend={handleSend}
           onRetry={handleRetry}
           onBack={() => setView('list')}
+          adminUi={adminUi}
+          onDeleted={() => {
+            setActiveId(null);
+            setView('list');
+          }}
         />
       ) : (
         <section className='thread thread--empty' aria-label='Conversation'>

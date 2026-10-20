@@ -1,11 +1,12 @@
 'use client';
 
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { Thread } from '@/lib/threads/types';
 import ThreadAvatar from '@/components/messages/shared/ThreadAvatar';
 import Composer from '@/components/messages/thread/Composer';
 import Timeline from '@/components/messages/thread/Timeline';
 import type { ShownMessage, VisitorMessage } from '@/components/messages/thread/types';
+import type { AdminUi } from '@/components/messages/admin/loadAdminUi';
 
 type ThreadViewProps = {
   thread: Thread;
@@ -17,6 +18,10 @@ type ThreadViewProps = {
   onSend: (text: string, botField: string) => void;
   onRetry: (messageId: string) => void;
   onBack: () => void;
+  /** The loaded admin components, or null for a visitor. */
+  adminUi?: AdminUi | null;
+  /** Called after the admin deletes this conversation. */
+  onDeleted?: () => void;
 };
 
 export default function ThreadView({
@@ -29,8 +34,11 @@ export default function ThreadView({
   onSend,
   onRetry,
   onBack,
+  adminUi = null,
+  onDeleted,
 }: ThreadViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   const messages = useMemo<ShownMessage[]>(
     () =>
@@ -59,13 +67,17 @@ export default function ThreadView({
     }
   }, [thread.id]);
 
-  // When the visitor sends, follow the new bubble down.
+  // When the visitor sends, or the admin posts, follow the new bubble down.
   const visitorCount = visitorMessages.length;
+  const ownCount = thread.messages.length;
+  const seenOwnCount = useRef(ownCount);
   useLayoutEffect(() => {
-    if (!visitorCount) return;
+    const posted = ownCount > seenOwnCount.current;
+    seenOwnCount.current = ownCount;
+    if (!visitorCount && !posted) return;
     const scroller = scrollRef.current;
     scroller?.scrollTo?.({ top: scroller.scrollHeight, behavior: 'smooth' });
-  }, [visitorCount]);
+  }, [visitorCount, ownCount]);
 
   return (
     <section className='thread' aria-label='Conversation'>
@@ -81,22 +93,50 @@ export default function ThreadView({
             <h2 className='thread-header__name'>{thread.title}</h2>
             {thread.tagline ? <p className='thread-header__tagline'>{thread.tagline}</p> : null}
           </div>
+          {adminUi ? (
+            <button
+              type='button'
+              className='thread-header__info'
+              aria-label='Conversation Details'
+              onClick={() => setShowDetails(true)}
+            >
+              <svg viewBox='0 0 24 24' aria-hidden='true'>
+                <circle cx='12' cy='12' r='9.5' />
+                <path d='M12 10.5v6.5' strokeLinecap='round' />
+                <circle className='dot' cx='12' cy='7.4' r='1.2' />
+              </svg>
+            </button>
+          ) : null}
         </header>
         <div className='thread__body'>
           {messages.length ? (
-            <Timeline messages={messages} onRetry={onRetry} />
+            <Timeline messages={messages} onRetry={onRetry} AdminMessage={adminUi?.AdminMessage} />
           ) : (
             <p className='thread__empty'>No messages yet.</p>
           )}
         </div>
       </div>
-      <Composer
-        draft={draft}
-        onDraftChange={onDraftChange}
-        email={email}
-        onEmailChange={onEmailChange}
-        onSend={onSend}
-      />
+      {adminUi ? (
+        <adminUi.AdminComposer threadId={thread.id} />
+      ) : (
+        <Composer
+          draft={draft}
+          onDraftChange={onDraftChange}
+          email={email}
+          onEmailChange={onEmailChange}
+          onSend={onSend}
+        />
+      )}
+      {adminUi && showDetails ? (
+        <adminUi.DetailsSheet
+          thread={thread}
+          onClose={() => setShowDetails(false)}
+          onDeleted={() => {
+            setShowDetails(false);
+            onDeleted?.();
+          }}
+        />
+      ) : null}
     </section>
   );
 }

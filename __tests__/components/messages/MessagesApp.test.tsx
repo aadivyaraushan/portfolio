@@ -12,6 +12,8 @@ const threads: Thread[] = [
     tagline: 'identities',
     pinned: true,
     icon: { src: 'https://cdn.example/bust.png', alt: '👤' },
+    iconName: 'Bust in Silhouette',
+    order: 0,
     messages: [
       { id: 'a1', text: "Hi! I'm Aadivya.\n\nCheck https://example.com/work for more.", sentAt: '2025-11-26T10:00:00.000Z', attachment: null },
     ],
@@ -22,6 +24,8 @@ const threads: Thread[] = [
     tagline: 'for anything professional',
     pinned: false,
     icon: null,
+    iconName: '',
+    order: 1,
     messages: [
       {
         id: 'r1',
@@ -37,6 +41,8 @@ const threads: Thread[] = [
     tagline: 'stuff i have on repeat',
     pinned: false,
     icon: null,
+    iconName: '',
+    order: 1,
     messages: [{ id: 'm1', text: 'Fav albums: Currents', sentAt: '2025-11-27T10:00:00.000Z', attachment: null }],
   },
 ];

@@ -3,7 +3,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
-  title: "aadivya's personal website",
+  title: 'Aadivya',
   description: 'A personal site in the shape of an iMessage inbox: what I am building, reading and thinking about.',
 };
 

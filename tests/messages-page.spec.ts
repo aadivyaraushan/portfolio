@@ -37,6 +37,11 @@ test.describe('Messages page', () => {
     expect(dataRequests).toEqual([]);
   });
 
+  test('the browser tab says Aadivya', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('Aadivya');
+  });
+
   test('lists pinned threads first, then the rest by newest message', async ({ page }) => {
     await page.goto('/');
     await expect(list(page).locator('.pinned__name')).toHaveText(['About Me', 'Projects']);
